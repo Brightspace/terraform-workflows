@@ -176,14 +176,10 @@ jobs:
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
 
-    - uses: Brightspace/third-party-actions@hashicorp/setup-terraform
-      with:
-        terraform_version: 1.0.3
-        terraform_wrapper: false
-
     - uses: Brightspace/terraform-workflows@plan/v1
       with:
         config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
+        terraform_version: 1.0.3
 
 
   collect:
@@ -223,11 +219,6 @@ jobs:
 
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
-
-    - uses: Brightspace/third-party-actions@hashicorp/setup-terraform
-      with:
-        terraform_version: 1.0.3
-        terraform_wrapper: false
 
     - uses: Brightspace/terraform-workflows@apply/v1
       with:

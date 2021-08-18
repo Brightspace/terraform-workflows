@@ -9,9 +9,18 @@ inputs:
     description: Environment config object from terraform-workflows/configure
     required: true
 
+  terraform_version:
+    description: Which version of terraform to use
+    required: true
+
 runs:
   using: composite
   steps:
+
+    - uses: Brightspace/third-party-actions@hashicorp/setup-terraform
+      with:
+        terraform_version: ${{ inputs.terraform_version }}
+        terraform_wrapper: false
 
     - id: setup
       shell: bash
