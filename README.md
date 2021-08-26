@@ -44,6 +44,26 @@ i.e. If your workspace is `terraform/environments/prod/ca-central-1`, name the e
 
 ### iam-build-tokens
 
+The [iam-build-tokens](https://github.com/Brightspace/iam-build-tokens) repository contains the 
+registry of the roles that require access to company resources.  These tokens enable the ability 
+to read/write/update systems like the build state, etc.
+
+You must add roles for your workflows to use to this repository.
+
+Go to the `terraform/roles` folder in the repository and add a terraform file that corresponds
+to your repository.
+i.e. - If your repository is `Brightspace/webdav`, add a `terraform/roles/webdav.tf` file.
+
+In this file you will need two modules.  These modules will document the roles that require
+build tokens.  Be sure to include all roles that will be used in your workflows that need
+access to systems.  For example, if you have a separate workflow that publishes containers
+to ECR, be sure to include that role in the list.
+
+The roles you define here should be roles that are defined for read-only access.
+
+The repository name you use is the portion that comes after the `Brightspace/`.
+i.e. - If your repository is `Brightspace/webdav`, use `repository = "webdav"`.
+
 1. Create a GitHub Actions Hub-role for your repository to be used by PRs
 
 ```tf
@@ -60,10 +80,18 @@ module "your_repo_name_ro" {
     "{ terraform plan role in your prd account }",
 
     # Dev-Terraform
-    "arn:aws:iam::891724658749:role/github/Brightspace-{ your repo name }-tfstate-reader",
+    "arn:aws:iam::891724658749:role/github/Brightspace+{ your repo name }+tfstate-reader",
   ]
 }
 ```
+
+The roles defined here should be read-write access roles. (Please note the difference 
+in module name.)
+Be sure that the listed environments matches the environments you created earlier.
+You will know it is working when you check your Environments and see a green lock
+icon with `1 secret` appear next to each environment.  If you have defined an
+environment that does not get this added, you need to double check your list of
+environments below.
 
 2. Create a GitHub Actions Hub-role for your environments to be used after merge
 ```tf
@@ -73,7 +101,7 @@ module "your_repo_name_rw" {
   repository   = "{ your repo name }"
   environments = [
     "preflight",
-    "{ your other environment names }",
+    "{ your other dev and prod environment names }",
   ]
 
   assumable_role_arns = [
@@ -84,7 +112,7 @@ module "your_repo_name_rw" {
     "{ terraform apply role in your prd account }",
 
     # Dev-Terraform
-    "arn:aws:iam::891724658749:role/github/Brightspace-{ your repo name }-tfstate-manager",
+    "arn:aws:iam::891724658749:role/github/Brightspace+{ your repo name }+tfstate-manager",
   ]
 }
 ```
