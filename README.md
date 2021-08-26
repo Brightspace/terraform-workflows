@@ -13,8 +13,21 @@ structure to your terraform usage.
 In your own repository you will need to create an environment for all activities that
 take place prior to commits with your repositories.
 
-Add a `preflight` environment by clicking `Settings` and then choosing `Environments` from the left-hand side.
-Now, follow the steps below.
+Add a `preflight` environment by clicking `Settings` and then choosing `Environments` from the left-hand side
+and follow the steps below.
+
+1. Create your environment
+  * Click `New Environment`
+  * Enter `preflight` and click `Configure Environment`.
+2. Add your main branch to the environment
+  * From the configuration screen, Click `All branches` and choose `Selected branches`
+  * Click `Add deployment branch rule`
+  * Enter the name of your main branch, e.g. `main`, and click `Add rule`.
+3. Save this environment by clicking `Save protection rules`.
+
+Now create an environment for each of your terraform envirionments/workspaces.
+You do this by following the steps below, but use the terraform environment as the environment name.
+i.e. If your workspace is `terraform/environments/prod/ca-central-1`, name the environment `prod/ca-central-1`
 
 1. Create your environment
   * Click `New Environment`
@@ -28,9 +41,6 @@ Now, follow the steps below.
   * In the box that appears, add the appropriate set of reviewers that can approve your deployments.
 4. Save this environment by clicking `Save protection rules`.
 
-Now create an environment for each of your terraform envirionments/workspaces.
-You do this by repeating the steps above, but use the terraform environment as the environment name.
-i.e. If your workspace is `terraform/environments/prod/ca-central-1`, name the environment `prod/ca-central-1`
 
 ### iam-build-tokens
 
