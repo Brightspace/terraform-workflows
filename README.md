@@ -1,15 +1,36 @@
 # GitHub Actions Terraform Workflows
 
+## What is this repo?
+The `terraform-workflows` repo is an attempt to provide a consistent and secure means for all projects within
+D2L to perform the many workflow tasks they have in common.  It aims to provide instructions on how you can
+structure your workflows to give minimum permissions to all roles, and to offer a flexible but consistent
+structure to your terraform usage.
+
 ## Setup
 
 ### Repository Environments
 
-1. Create an environment called `preflight`.
-  * Add a _Selected brances_ rule to _Deployment branches_, restricting it to `main`
-2. Create an environment for each of your terraform environments/worksapces
-  * e.g. If your workspace is `terraform/environments/prod/ca-central-1`, name the environment `prod/ca-central-1`
-  * Add a _Selected brances_ rule to _Deployment branches_, restricting it to `main`
-  * Add at least one team or person to _Required reviewers_
+In your own repository you will need to create an environment for all activities that
+take place prior to commits with your repositories.
+
+Add a `preflight` environment by clicking `Settings` and then choosing `Environments` from the left-hand side.
+Now, follow the steps below.
+
+1. Create your environment
+  * Click `New Environment`
+  * Enter your environment name and click `Configure Environment`.
+2. Add your main branch to the environment
+  * From the configuration screen, Click `All branches` and choose `Selected branches`
+  * Click `Add deployment branch rule`
+  * Enter the name of your main branch, e.g. `main`, and click `Add rule`.
+3. Add required reviewers for this environment
+  * Check the `Required reviewers` checkbox.
+  * In the box that appears, add the appropriate set of reviewers that can approve your deployments.
+4. Save this environment by clicking `Save protection rules`.
+
+Now create an environment for each of your terraform envirionments/workspaces.
+You do this by repeating the steps above, but use the terraform environment as the environment name.
+i.e. If your workspace is `terraform/environments/prod/ca-central-1`, name the environment `prod/ca-central-1`
 
 ### iam-build-tokens
 
