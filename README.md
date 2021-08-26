@@ -229,7 +229,7 @@ your repository with the following content.
 Within the content, the `provider_role_arn` specified will be the arn of the role, not just the role name.
 
 Each region that you have defined for your workflows will also need to be added as blocks.  For example,
-in the content below, only `dev/ca-central-1` is defined.
+in the content below, only `dev/ca-central-1` and `prod/ca-central-1` are defined.
 
 ```yaml
 # terraform.yaml
