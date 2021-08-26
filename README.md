@@ -119,6 +119,20 @@ module "your_repo_name_rw" {
 
 ### terraform-infrastructure
 
+The [terraform-infrastructure](https://github.com/Brightspace/terraform-infrastructure) repository
+consolidates the state for all terraform in one place.  Adding your repository here will enable
+it to store state in the shared terraform state.
+
+Go to the `terraform/environments/dev-terraform` folder in the repository and add a terraform file that corresponds
+to your repository.
+i.e. - If your repository is `Brightspace/webdav`, add a `webdav.tf` file.
+
+Don't worry about the folders that your file is in, those are relevant to the account and location of the state,
+rather than being related to anything to do with your own repository terraform state.
+
+The `github_repository` name you use is the portion that comes after the `Brightspace/`.
+i.e. - If your repository is `Brightspace/webdav`, use `github_repository = "webdav"`.
+
 1. Configure Terraform state management for your repository
 
 ```tf
