@@ -165,7 +165,7 @@ module "your_repo_name" {
 
 ### Update your terraform
 
-1. Remove all configuration from your s3 backend, if any.
+1. Remove all configuration from your s3 backend, if any and replace it with the following.
 
 ```tf
 terraform {
@@ -189,7 +189,47 @@ provider "aws" {
 }
 ```
 
+### Update any exsting deployment roles
+
+If you have any exsting roles being used by your deployment infrastructure these will
+need to have their trust relationship policy updated.
+
+Navigate to IAM, find your role used for deployment, click over to the `Trust relationships` tab
+and click `Edit trust relationship`.
+
+Be sure to make this change in both your Dev and Prod accounts.
+
+Apply the following change:
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "arn:aws:iam::323258989788:role/hub-roles/github+Brightspace+{ your repo name }+deploy",
+          "arn:aws:iam::323258989788:role/hub-roles/github+Brightspace+{ your repo name }"
+        ]
+      },
+      "Action": [
+        "sts:AssumeRole",
+        "sts:TagSession"
+      ]
+    }
+  ]
+}
+```
+
 ### Add your workflow
+
+Now the Terraform workflow can be added to the repository.  Create the `.github/terraform.yaml` in
+your repository with the following content.
+
+Within the content, the `provider_role_arn` specified will be the arn of the role, not just the role name.
+
+Each region that you have defined for your workflows will also need to be added as blocks.  For example,
+in the content below, only `dev/ca-central-1` is defined.
 
 ```yaml
 # terraform.yaml
@@ -256,7 +296,7 @@ jobs:
     - uses: Brightspace/terraform-workflows@plan/v2
       with:
         config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
-        terraform_version: 1.0.3
+        terraform_version: 1.0.4
 
 
   collect:
