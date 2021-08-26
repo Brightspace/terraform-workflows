@@ -41,6 +41,8 @@ i.e. If your workspace is `terraform/environments/prod/ca-central-1`, name the e
   * In the box that appears, add the appropriate set of reviewers that can approve your deployments.
 4. Save this environment by clicking `Save protection rules`.
 
+Note that as a side-effect of a limitation there will be an environment called `pr` created in your
+`Environments` list the first time it is referenced by terraform.  This is normal and should be left alone.
 
 ### iam-build-tokens
 
