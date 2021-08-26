@@ -223,7 +223,7 @@ Apply the following change:
 
 ### Add your workflow
 
-Now the Terraform workflow can be added to the repository.  Create the `.github/terraform.yaml` in
+Now the Terraform workflow can be added to the repository.  Create the `.github/workflows/terraform.yaml` in
 your repository with the following content.
 
 Within the content, the `provider_role_arn` specified will be the arn of the role, not just the role name.
