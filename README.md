@@ -117,6 +117,10 @@ module "your_repo_name_rw" {
 }
 ```
 
+After the PR is merged, you will need to approve the workflow to have the changes deployed.
+GitHub will also remind you of this fact on your PR with a link to instructions on how to apply the changes.
+Your workflow will be listed on [CircleCI](https://app.circleci.com/pipelines/github/Brightspace/iam-build-tokens).
+
 ### terraform-infrastructure
 
 The [terraform-infrastructure](https://github.com/Brightspace/terraform-infrastructure) repository
