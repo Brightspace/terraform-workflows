@@ -26,4 +26,5 @@ runs:
       shell: bash
       env:
         PLAN_PATH: ${{ steps.download.outputs.artifacts_dir }}/terraform.plan
+        PLAN_ARTIFACTS: ${{ steps.download.outputs.artifacts_dir }}
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}

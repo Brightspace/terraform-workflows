@@ -21,5 +21,12 @@ EOF
 echo "##[group]terraform init"
 terraform init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
+
+echo "##[group]restore-artifacts"
+if [[ -d "${PLAN_ARTIFACTS}/.artifacts" ]]; then
+	cp -r "${PLAN_ARTIFACTS}/.artifacts" .
+fi
+echo "##[endgroup]"
+
 terraform show "${PLAN_PATH}"
 terraform apply -input=false "${PLAN_PATH}"

@@ -64,4 +64,8 @@ case "${PLAN_EXIT_CODE}" in
 esac
 set -e
 
+if [[ -d .artifacts ]]; then
+	cp -r .artifacts "${ARTIFACTS_DIR}"
+fi
+
 terraform show -json "${ARTIFACTS_DIR}/terraform.plan" > "${ARTIFACTS_DIR}/terraform.plan.json"
