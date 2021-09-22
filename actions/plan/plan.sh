@@ -69,3 +69,6 @@ if [[ -d .artifacts ]]; then
 fi
 
 terraform show -json "${ARTIFACTS_DIR}/terraform.plan" > "${ARTIFACTS_DIR}/terraform.plan.json"
+
+ENCODED_PLAN=$(terraform show -no-color "${ARTIFACTS_DIR}/terraform.plan" | sed -z 's/%/%25/g; s/\n/%0A/g; s/\r/%0D/g')
+echo "::set-output name=plan::${ENCODED_PLAN}"

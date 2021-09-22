@@ -17,6 +17,11 @@ inputs:
     description: Which version of terraform to use
     required: true
 
+outputs:
+  plan:
+    description: Text of the plan
+    value: ${{ steps.plan.outputs.plan }}
+
 runs:
   using: composite
   steps:
