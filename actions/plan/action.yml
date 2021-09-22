@@ -18,9 +18,9 @@ inputs:
     required: true
 
 outputs:
-  plan:
-    description: Text of the plan
-    value: ${{ steps.plan.outputs.plan }}
+  plan_json:
+    description: Planned changes as JSON
+    value: ${{ steps.plan.outputs.plan_json }}
 
 runs:
   using: composite

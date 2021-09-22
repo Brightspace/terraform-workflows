@@ -48,6 +48,7 @@ case "${PLAN_EXIT_CODE}" in
 	"0")
 		# success with no changes
 		echo "::set-output name=has_changes::false"
+		echo "::set-output name=plan_json::{}"
 		exit 0
 		;;
 
@@ -68,7 +69,5 @@ if [[ -d .artifacts ]]; then
 	cp -r .artifacts "${ARTIFACTS_DIR}"
 fi
 
-terraform show -json "${ARTIFACTS_DIR}/terraform.plan" > "${ARTIFACTS_DIR}/terraform.plan.json"
-
-ENCODED_PLAN=$(terraform show -no-color "${ARTIFACTS_DIR}/terraform.plan" | sed -z 's/%/%25/g; s/\n/%0A/g; s/\r/%0D/g')
-echo "::set-output name=plan::${ENCODED_PLAN}"
+PLAN_JSON=$(terraform show -json "${ARTIFACTS_DIR}/terraform.plan" | tee "${ARTIFACTS_DIR}/terraform.plan.json")
+echo "::set-output name=plan_json::${PLAN_JSON}"
