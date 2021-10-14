@@ -16,7 +16,7 @@ if [ "${COMMENTS_URL}" == "" ]; then
 	exit 0
 fi
 
-SEARCH_TERM="${ENVIRONMENT} terraform plan"
+SEARCH_TERM="<b>${ENVIRONMENT} terraform plan</b>"
 PREVIOUS_COMMENT_ID=$(curl \
 	--silent \
 	--fail \
