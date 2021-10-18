@@ -34,6 +34,7 @@ terraform init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
 
 set +e
+echo "##[group]terraform plan"
 terraform plan \
 	-input=false \
 	-lock=false \
@@ -41,6 +42,7 @@ terraform plan \
 	-var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" \
 	-out "${ARTIFACTS_DIR}/terraform.plan" \
 	${REFRESH}
+echo "##[endgroup]"
 
 PLAN_EXIT_CODE=$?
 case "${PLAN_EXIT_CODE}" in
@@ -64,6 +66,10 @@ case "${PLAN_EXIT_CODE}" in
 		;;
 esac
 set -e
+
+# print only planned changes without noisy drift detection
+# https://github.com/hashicorp/terraform/issues/28803
+terraform show "${ARTIFACTS_DIR}/terraform.plan" | sed --silent '/Terraform will perform the following actions/,$p'
 
 if [[ -d .artifacts ]]; then
 	cp -r .artifacts "${ARTIFACTS_DIR}"

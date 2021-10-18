@@ -21,7 +21,7 @@ if [ "${HAS_CHANGES}" == "false" ]; then
 	exit 0
 fi
 
-PLAN_TEXT=$(terraform show "${ARTIFACTS_DIR}/terraform.plan" -no-color)
+PLAN_TEXT=$(terraform show "${ARTIFACTS_DIR}/terraform.plan" -no-color | sed --silent '/Terraform will perform the following actions/,$p')
 
 GITHUB_COMMENT_TEXT=$(mktemp)
 cat << EOF > "${GITHUB_COMMENT_TEXT}"
@@ -31,7 +31,7 @@ cat << EOF > "${GITHUB_COMMENT_TEXT}"
 has changes :yellow_circle:
 </summary>
 
-\`\`\`
+\`\`\`terraform
 ${PLAN_TEXT}
 \`\`\`
 </details>
