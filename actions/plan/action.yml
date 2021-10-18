@@ -22,6 +22,10 @@ outputs:
     description: Planned changes as JSON
     value: ${{ steps.plan.outputs.plan_json }}
 
+  has_changes:
+    description: true/false. Whether there's any planned changes.
+    value: ${{ steps.plan.outputs.has_changes }}
+
 runs:
   using: composite
   steps:
