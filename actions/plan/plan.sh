@@ -70,6 +70,8 @@ set -e
 # print only planned changes without noisy drift detection
 # https://github.com/hashicorp/terraform/issues/28803
 terraform show "${ARTIFACTS_DIR}/terraform.plan" | sed --silent '/Terraform will perform the following actions/,$p'
+# output of the command above ends with a colour code without trailing newline, which can mess up following workflow commands
+echo
 
 if [[ -d .artifacts ]]; then
 	cp -r .artifacts "${ARTIFACTS_DIR}"
