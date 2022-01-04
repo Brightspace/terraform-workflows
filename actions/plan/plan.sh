@@ -73,6 +73,10 @@ terraform show "${ARTIFACTS_DIR}/terraform.plan" | sed --silent '/Terraform will
 # output of the command above ends with a colour code without trailing newline, which can mess up following workflow commands
 echo
 
+if [ "${GITHUB_EVENT_NAME}" != "pull_request" ]; then
+	echo "Approve the deployment here: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+fi
+
 if [[ -d .artifacts ]]; then
 	cp -r .artifacts "${ARTIFACTS_DIR}"
 fi
