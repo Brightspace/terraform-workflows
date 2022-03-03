@@ -71,6 +71,17 @@ provider "aws" {
 }
 ```
 
+3. (Optional) Update all artifacts paths to be under `${path.root}/.artifacts/`
+
+```tf
+data "archive_file" "lambda_package" {
+  type        = "zip"
+  source_file = "${path.module}/index.js"
+  output_path = "${path.root}/.artifacts/lambda_package.zip"
+}
+```
+
+
 ### Add your workflow
 
 Now the Terraform workflow can be added to the repository.  Create the `.github/workflows/terraform.yaml` in
