@@ -71,7 +71,7 @@ set -e
 SUMMARY_PLAN_TEXT=$(terraform show "${ARTIFACTS_DIR}/terraform.plan" -no-color | sed --silent '/Terraform will perform the following actions/,$p')
 let SUMMARY_PLAN_TEXT_TRUNCATE_BYTES=1048576-20
 echo '```terraform' > ${GITHUB_STEP_SUMMARY}
-echo $(<<<${PLAN_TEXT} head --bytes=${SUMMARY_PLAN_TEXT_TRUNCATE_BYTES}) > ${GITHUB_STEP_SUMMARY}
+echo $(<<<${SUMMARY_PLAN_TEXT} head --bytes=${SUMMARY_PLAN_TEXT_TRUNCATE_BYTES}) > ${GITHUB_STEP_SUMMARY}
 echo '```' > ${GITHUB_STEP_SUMMARY}
 
 # print planned changes to console
