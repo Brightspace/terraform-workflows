@@ -67,8 +67,14 @@ case "${PLAN_EXIT_CODE}" in
 esac
 set -e
 
-# print only planned changes without noisy drift detection
-# https://github.com/hashicorp/terraform/issues/28803
+# output planned changes to step summary
+SUMMARY_PLAN_TEXT=$(terraform show "${ARTIFACTS_DIR}/terraform.plan" -no-color | sed --silent '/Terraform will perform the following actions/,$p')
+let SUMMARY_PLAN_TEXT_TRUNCATE_BYTES=1048576-20
+echo '```terraform' > ${GITHUB_STEP_SUMMARY}
+echo $(<<<${PLAN_TEXT} head --bytes=${SUMMARY_PLAN_TEXT_TRUNCATE_BYTES}) > ${GITHUB_STEP_SUMMARY}
+echo '```' > ${GITHUB_STEP_SUMMARY}
+
+# print planned changes to console
 terraform show "${ARTIFACTS_DIR}/terraform.plan" | sed --silent '/Terraform will perform the following actions/,$p'
 # output of the command above ends with a colour code without trailing newline, which can mess up following workflow commands
 echo
