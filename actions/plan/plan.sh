@@ -86,7 +86,7 @@ if [ "${GITHUB_EVENT_NAME}" != "pull_request" ]; then
 fi
 
 if [[ -d .artifacts ]]; then
-	"Collecting .artifacts:"
+	echo "Collecting .artifacts:"
 	cp -rv .artifacts "${ARTIFACTS_DIR}"
 else
 	echo "No .artifacts directory found"
