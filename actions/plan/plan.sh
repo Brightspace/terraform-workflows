@@ -86,7 +86,10 @@ if [ "${GITHUB_EVENT_NAME}" != "pull_request" ]; then
 fi
 
 if [[ -d .artifacts ]]; then
-	cp -r .artifacts "${ARTIFACTS_DIR}"
+	"Collecting .artifacts:"
+	cp -rv .artifacts "${ARTIFACTS_DIR}"
+else
+	echo "No .artifacts directory found"
 fi
 
 terraform show -json "${ARTIFACTS_DIR}/terraform.plan" > "${ARTIFACTS_DIR}/terraform.plan.json"
