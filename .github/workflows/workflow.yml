@@ -15,7 +15,7 @@ on:
         type: string
 
 jobs:
-    configure:
+  configure:
     name: Configure
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: 10
