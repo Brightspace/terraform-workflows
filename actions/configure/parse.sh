@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd 2> /dev/null;)";
+
 export D2L_TF_CONFIGURE_TMP_DIR=$(mktemp -d)
 
 echo "${CONFIG}" \
@@ -19,7 +21,7 @@ echo "${CONFIG}" \
 			"workspace_path": .path
 		}' \
 	 	- \
-	| xargs -d'\n' -I{} env ENVCONFIG='{}' ./configure.sh
+	| xargs -d'\n' -I{} env ENVCONFIG='{}' "${SCRIPT_DIR}/configure.sh"
 
 
 echo "::set-output name=environments::$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/envs)"

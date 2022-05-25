@@ -24,7 +24,6 @@ jobs:
       - id: parse
         run: ./actions/configure/parse.sh
         shell: bash
-        working-directory: ./actions/configure
         env:
           CONFIG: ${{ inputs.config }}
 
