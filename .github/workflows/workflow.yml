@@ -22,10 +22,9 @@ jobs:
 
     steps:
       - id: parse
-        run: ./actions/configure/parse.sh
-        shell: bash
-        env:
-          CONFIG: ${{ inputs.config }}
+        uses: Brightspace/terraform-workflows/actions/configure/parse@reusable-test
+        with:
+          config: ${{ inputs.config }}
 
     outputs:
       environments: ${{ steps.parse.outputs.environments }}
