@@ -12,6 +12,11 @@ on:
         type: string
         default: main
 
+      refresh_on_pr:
+        required: false
+        type: boolean
+        default: true
+
       terraform_version:
         required: true
         type: string
@@ -63,6 +68,7 @@ jobs:
       with:
         config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
         terraform_version: ${{ inputs.terraform_version }}
+        refresh_on_pr: ${{ inputs.refresh_on_pr }}
 
 
   plan:
