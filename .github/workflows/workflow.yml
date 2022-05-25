@@ -17,7 +17,7 @@ on:
         type: string
 
     outputs:
-      has_changes:
+      had_changes:
         value: ${{ jobs.collect.outputs.has_changes }}
 
 env:
