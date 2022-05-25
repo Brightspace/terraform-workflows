@@ -1,0 +1,24 @@
+name: 'Terraform Configure'
+
+inputs:
+
+  config:
+    required: true
+
+outputs:
+  environments:
+    value: ${{ steps.parse.outputs.environments }}
+  config:
+    value: ${{ steps.parse.outputs.config }}
+
+runs:
+  using: composite
+  steps:
+
+    - id: parse
+      run: ${{ github.action_path }}/parse.sh
+      shell: bash
+      env:
+        HERE: ${{ github.action_path }}
+        CONFIG: ${{ inputs.config }}
+
