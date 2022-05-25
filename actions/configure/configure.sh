@@ -2,12 +2,13 @@
 
 set -euo pipefail
 
-set +u
-if [ -z "${D2L_TF_ENVS}" ]; then
+if [ -f "${D2L_TF_CONFIGURE_TMP_DIR}/envs" ]; then
+	D2L_TF_ENVS=$(cat "${D2L_TF_CONFIGURE_TMP_DIR}/envs")
+	D2L_TF_CONFIG=$(cat "${D2L_TF_CONFIGURE_TMP_DIR}/config")
+else
 	D2L_TF_ENVS="[]"
 	D2L_TF_CONFIG="{}"
 fi
-set -u
 
 if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
 	ROLE_ARN=$(jq -r '.provider_role_arn_ro' <<< "${ENVCONFIG}")
@@ -30,5 +31,5 @@ D2L_TF_CONFIG=$(jq -cr \
 	<<< "${D2L_TF_CONFIG}"
 )
 
-echo "D2L_TF_ENVS=${D2L_TF_ENVS}" >> "${GITHUB_ENV}"
-echo "D2L_TF_CONFIG=${D2L_TF_CONFIG}" >> "${GITHUB_ENV}"
+echo "${D2L_TF_ENVS}" > "${D2L_TF_CONFIGURE_TMP_DIR}/envs"
+echo "${D2L_TF_CONFIG}" > "${D2L_TF_CONFIGURE_TMP_DIR}/config"

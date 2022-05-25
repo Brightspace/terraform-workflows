@@ -27,6 +27,8 @@ runs:
   using: composite
   steps:
 
+    - run: echo "D2L_TF_CONFIGURE_TMP_DIR=$(mktemp -d)" >> "${GITHUB_ENV}"
+
     - run: ${{ github.action_path }}/configure.sh
       shell: bash
       env:

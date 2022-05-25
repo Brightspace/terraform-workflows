@@ -1,0 +1,130 @@
+on:
+  workflow_call:
+    inputs:
+      config:
+        required: true
+        type: string
+
+      default_branch:
+        required: true
+        type: string
+        default: main
+
+      terraform_version:
+        required: true
+        type: string
+
+jobs:
+    configure:
+    name: Configure
+    runs-on: [self-hosted, Linux, AWS]
+    timeout-minutes: 10
+
+    steps:
+      - id: parse
+        run: ./actions/configure/parse.sh
+        shell: bash
+        working-directory: ./actions/configure
+        env:
+          CONFIG: ${{ inputs.config }}
+
+    outputs:
+      environments: ${{ steps.parse.outputs.environments }}
+      config: ${{ steps.parse.outputs.config }}
+
+
+  plan_pr:
+    name: Plan [PR]
+    runs-on: [self-hosted, Linux, AWS]
+    timeout-minutes: 10
+
+    if: ${{ github.event_name == 'pull_request' }}
+
+    needs: configure
+
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJson(needs.configure.outputs.environments) }}
+
+    steps:
+    - uses: Brightspace/third-party-actions@actions/checkout
+
+    - uses: Brightspace/terraform-workflows/actions/plan@reusable-test
+      with:
+        config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
+        terraform_version: ${{ inputs.terraform_version }}
+
+
+  plan:
+    name: Plan
+    runs-on: [self-hosted, Linux, AWS]
+    timeout-minutes: 10
+
+    if: ${{ github.event_name != 'pull_request' }}
+    environment: preflight
+
+    needs: configure
+
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJson(needs.configure.outputs.environments) }}
+
+    steps:
+    - uses: Brightspace/third-party-actions@actions/checkout
+
+    - name: 'Assert: Branch is up to date'
+      uses: Brightspace/assert-git-remote-ref-action@master
+      with:
+        remote: origin
+        ref: ${{ inputs.default_branch }}
+
+    - uses: Brightspace/terraform-workflows/actions/plan@reusable-test
+      with:
+        config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
+        terraform_version: ${{ inputs.terraform_version }}
+
+
+  collect:
+    name: Collect
+    runs-on: [self-hosted, Linux, AWS]
+    timeout-minutes: 10
+
+    needs: plan
+
+    if: ${{ github.event_name != 'pull_request' }}
+
+    steps:
+    - id: collect
+      uses: Brightspace/terraform-workflows@collect/v2
+
+    outputs:
+      has_changes: ${{ steps.collect.outputs.has_changes }}
+      changed: ${{ steps.collect.outputs.changed }}
+      config: ${{ steps.collect.outputs.config }}
+
+
+  apply:
+    name: Apply
+    runs-on: [self-hosted, Linux, AWS]
+    timeout-minutes: 10
+
+    needs: collect
+
+    if: ${{ needs.collect.outputs.has_changes == 'true' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJson(needs.collect.outputs.changed) }}
+
+    environment: ${{ matrix.environment }}
+    concurrency: ${{ matrix.environment }}
+
+    steps:
+    - uses: Brightspace/third-party-actions@actions/checkout
+
+    - uses: Brightspace/terraform-workflows/actions/apply@reusable-test
+      with:
+        config: ${{ toJson(fromJson(needs.collect.outputs.config)[matrix.environment]) }}

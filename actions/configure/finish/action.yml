@@ -13,5 +13,5 @@ runs:
     - id: finish
       shell: bash
       run: |
-        echo "::set-output name=environments::${D2L_TF_ENVS}"
-        echo "::set-output name=config::${D2L_TF_CONFIG}"
+        echo "::set-output name=environments::$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/envs)"
+        echo "::set-output name=config::$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/config)"
