@@ -4,7 +4,12 @@ set -euo pipefail
 
 . "${BASH_SOURCE%/*}/skip_prs.sh"
 
-TERRAFORM_VERSION=$(terraform --version --json | jq -r '.terraform_version')
+TERRAFORM_VERSION_JSON=$(terraform version -json)
+if [ "${TERRAFORM_VERSION_JSON:0:1}" == "{" ]; then
+	TERRAFORM_VERSION=$(terraform version -json | jq -r '.terraform_version')
+else
+	TERRAFORM_VERSION="${TERRAFORM_VERSION_INPUT}"
+fi
 
 jq \
 	--arg run_id "${GITHUB_RUN_ID}" \

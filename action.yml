@@ -58,6 +58,7 @@ runs:
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
         HAS_CHANGES: ${{ steps.plan.outputs.has_changes }}
         WORKSPACE_PATH: ${{ fromJson(inputs.config).workspace_path }}
+        TERRAFORM_VERSION_INPUT: ${{ inputs.terraform_version }}
 
     - run: ${{ github.action_path }}/archive.sh
       shell: bash
