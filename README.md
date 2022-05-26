@@ -111,12 +111,14 @@ jobs:
     with:
       terraform_version: 1.2.1
       config: |
+        # Dev-Project Account
         - provider_role_arn_ro: "{ terraform plan role in your dev account }"
           provider_role_arn_rw: "{ terraform apply role in your dev account }"
           workspaces:
             - environment: dev/us-east-1
               path: terraform/environments/dev/us-east-1
 
+        # Prd-Project Account
         - provider_role_arn_ro: "{ terraform plan role in your prod account }"
           provider_role_arn_rw: "{ terraform apply role in your prod account }"
           workspaces:
