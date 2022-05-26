@@ -50,7 +50,7 @@ jobs:
   plan_pr:
     name: Plan [PR]
     runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 10
+    timeout-minutes: 60
 
     if: ${{ github.event_name == 'pull_request' }}
 
@@ -74,7 +74,7 @@ jobs:
   plan:
     name: Plan
     runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 10
+    timeout-minutes: 60
 
     if: ${{ github.event_name != 'pull_request' }}
     environment: preflight
@@ -121,7 +121,7 @@ jobs:
   apply:
     name: Apply
     runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 10
+    timeout-minutes: 60
 
     needs: collect
 
