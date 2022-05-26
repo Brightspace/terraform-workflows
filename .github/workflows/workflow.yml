@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - id: parse
-        uses: Brightspace/terraform-workflows/actions/configure/parse@reusable-test
+        uses: Brightspace/terraform-workflows/actions/configure/parse@v3
         with:
           config: ${{ inputs.config }}
 
@@ -64,7 +64,7 @@ jobs:
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
 
-    - uses: Brightspace/terraform-workflows/actions/plan@reusable-test
+    - uses: Brightspace/terraform-workflows/actions/plan@v3
       with:
         config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
         terraform_version: ${{ inputs.terraform_version }}
@@ -95,7 +95,7 @@ jobs:
         remote: origin
         ref: ${{ inputs.default_branch }}
 
-    - uses: Brightspace/terraform-workflows/actions/plan@reusable-test
+    - uses: Brightspace/terraform-workflows/actions/plan@v3
       with:
         config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
         terraform_version: ${{ inputs.terraform_version }}
@@ -138,6 +138,6 @@ jobs:
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
 
-    - uses: Brightspace/terraform-workflows/actions/apply@reusable-test
+    - uses: Brightspace/terraform-workflows/actions/apply@v3
       with:
         config: ${{ toJson(fromJson(needs.collect.outputs.config)[matrix.environment]) }}
