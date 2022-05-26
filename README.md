@@ -201,3 +201,24 @@ Defaults to `true`.
 
 **Required**.
 The version of terraform to install and use (e.g. `1.2.1`).
+
+
+## Migrating from v2
+
+If migrating from v2 of terraform-workflows, then when possible v3's [reusable-workflow](#add-your-workflow) should be preferred.
+For builds that are not yet terraform-only and need additional customization the individual actions are still available; however,
+referencing these actions has changed:
+
+```diff
+- uses: Brightspace/terraform-workflows@configure/v2
++ uses: Brightspace/terraform-workflows/actions/configure@v3
+
+- uses: Brightspace/terraform-workflows/finish@configure/v2
++ uses: Brightspace/terraform-workflows/actions/configure/finish@v3
+
+- uses: Brightspace/terraform-workflows@plan/v2
++ uses: Brightspace/terraform-workflows/actions/plan@v3
+
+- uses: Brightspace/terraform-workflows@apply/v2
++ uses: Brightspace/terraform-workflows/actions/apply@v3
+```
