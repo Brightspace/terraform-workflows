@@ -27,6 +27,7 @@ D2L_TF_CONFIG=$(jq -cr \
 	--arg role_arn "${ROLE_ARN}" \
 	'.[$envconfig.environment] = $envconfig
 	| .[$envconfig.environment].provider_role_arn = $role_arn
+	| .[$envconfig.environment].variables = {}
 	' \
 	<<< "${D2L_TF_CONFIG}"
 )

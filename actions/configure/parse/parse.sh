@@ -16,7 +16,8 @@ echo "${CONFIG}" \
 			"provider_role_arn_rw": $account.provider_role_arn_rw,
 			"provider_role_tfvar": $tfvar,
 			"environment": .environment,
-			"workspace_path": .path
+			"workspace_path": .path,
+			"variables": .variables
 		}' \
 	 	- \
 	| xargs -d'\n' -I{} env ENVCONFIG='{}' "${HERE}/../configure.sh"
