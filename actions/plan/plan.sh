@@ -77,7 +77,7 @@ terraform show "${ARTIFACTS_DIR}/terraform.plan" -no-color \
 echo '```' >> ${GITHUB_STEP_SUMMARY}
 
 # print planned changes to console
-terraform show "${ARTIFACTS_DIR}/terraform.plan" | sed --silent '/Terraform will perform the following actions/,$p'
+terraform show "${ARTIFACTS_DIR}/terraform.plan" | sed --silent '/Terraform will perform the following actions/,$p' --unbuffered
 # output of the command above ends with a colour code without trailing newline, which can mess up following workflow commands
 echo
 
