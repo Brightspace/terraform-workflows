@@ -5,6 +5,11 @@ inputs:
   GITHUB_TOKEN:
     default: ${{ github.token }}
 
+  comment_plan:
+    description: Create a pull request comment of the plan in addition to adding it to the summary page
+    required: false
+    default: true
+
   config:
     description: Environment config object from terraform-workflows/configure
     required: true
@@ -72,6 +77,7 @@ runs:
         PATH_TO_ARCHIVE: ${{ steps.setup.outputs.artifacts_dir }}
 
     - working-directory: ${{ fromJson(inputs.config).workspace_path }}
+      if: ${{ inputs.comment_plan }}
       run: ${{ github.action_path }}/hide-old-comment.sh
       shell: bash
       env:
@@ -80,6 +86,7 @@ runs:
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
 
     - working-directory: ${{ fromJson(inputs.config).workspace_path }}
+      if: ${{ inputs.comment_plan }}
       run: ${{ github.action_path }}/comment.sh
       shell: bash
       env:
