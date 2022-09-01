@@ -89,7 +89,7 @@ your repository with the following content.
 
 Within the content, the `provider_role_arn_{ro,rw}` specified will be the arn of the role, not just the role name.
 
-Each region that you have defined for your workflows will also need to be added as worksapces.  For example,
+Each region that you have defined for your workflows will also need to be added as workspaces.  For example,
 in the content below, only `dev/us-east-1`, `prod/ca-central-1` and `prod/us-east-1` are defined.
 
 ```yaml
