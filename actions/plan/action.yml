@@ -45,11 +45,6 @@ runs:
       run: |
         echo "::set-output name=artifacts_dir::$(mktemp -d)"
 
-    - run: ${{ github.action_path }}/set-tfvars.py
-      shell: python
-      env:
-        VARIABLES: ${{ toJson(fromJson(inputs.config).variables) }}
-
     - id: plan
       working-directory: ${{ fromJson(inputs.config).workspace_path }}
       run: ${{ github.action_path }}/plan.sh
