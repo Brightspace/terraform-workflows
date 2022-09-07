@@ -3,6 +3,12 @@ name: Terraform
 on:
   workflow_call:
     inputs:
+      comment_plan:
+        description: Create a pull request comment of the plan in addition to adding it to the summary page
+        required: false
+        type: boolean
+        default: true
+
       config:
         required: true
         type: string
@@ -66,6 +72,7 @@ jobs:
 
     - uses: Brightspace/terraform-workflows/actions/plan@v3
       with:
+        comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
