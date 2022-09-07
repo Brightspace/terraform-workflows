@@ -72,7 +72,7 @@ runs:
         PATH_TO_ARCHIVE: ${{ steps.setup.outputs.artifacts_dir }}
 
     - working-directory: ${{ fromJson(inputs.config).workspace_path }}
-      if: ${{ inputs.comment_plan }}
+      if: inputs.comment_plan
       run: ${{ github.action_path }}/hide-old-comment.sh
       shell: bash
       env:
@@ -81,7 +81,7 @@ runs:
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
 
     - working-directory: ${{ fromJson(inputs.config).workspace_path }}
-      if: ${{ inputs.comment_plan }}
+      if: inputs.comment_plan
       run: ${{ github.action_path }}/comment.sh
       shell: bash
       env:
