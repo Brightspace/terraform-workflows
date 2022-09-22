@@ -22,6 +22,10 @@ if [ "${HAS_CHANGES}" == "false" ]; then
 fi
 
 PLAN_TEXT=$(terraform show "${ARTIFACTS_DIR}/terraform.plan" -no-color | sed --silent '/Terraform will perform the following actions/,$p')
+if [ "${PLAN_TEXT:0:60000}" != "${PLAN_TEXT}" ]; then
+	NEWLINE=$'\n'
+	PLAN_TEXT="${PLAN_TEXT:0:60000}${NEWLINE}${NEWLINE}-- Plan is truncated.  See build log for full plan. --"
+fi
 
 GITHUB_COMMENT_TEXT=$(mktemp)
 cat << EOF > "${GITHUB_COMMENT_TEXT}"
