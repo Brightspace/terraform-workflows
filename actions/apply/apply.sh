@@ -18,10 +18,6 @@ dynamodb_table = "d2l-terraform-state"
 key            = "github/${GITHUB_REPOSITORY}/${ENVIRONMENT}.tfstate"
 EOF
 
-echo "##[group]terraform init"
-terraform init -input=false -backend-config="${BACKEND_CONFIG}"
-echo "##[endgroup]"
-
 echo "##[group]restore-artifacts"
 if [[ -d "${PLAN_ARTIFACTS}/.artifacts" ]]; then
 	echo "Copying additional artifacts to $PWD/.artifacts:"
@@ -29,6 +25,10 @@ if [[ -d "${PLAN_ARTIFACTS}/.artifacts" ]]; then
 else
 	echo "Plan did not contain additional artifacts"
 fi
+echo "##[endgroup]"
+
+echo "##[group]terraform init"
+terraform init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
 
 terraform show "${PLAN_PATH}"
