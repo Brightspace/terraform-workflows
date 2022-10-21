@@ -22,5 +22,5 @@ echo "${CONFIG}" \
 	| xargs -d'\n' -I{} env ENVCONFIG='{}' "${HERE}/../configure.sh"
 
 
-echo "environments=$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/envs)" >> "$GITHUB_OUTPUT"
-echo "config=$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/config)" >> "$GITHUB_OUTPUT"
+echo "environments=$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/envs)" >> "${GITHUB_OUTPUT}"
+echo "config=$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/config)" >> "${GITHUB_OUTPUT}"

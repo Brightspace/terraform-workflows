@@ -42,10 +42,10 @@ for f in "${DETAILS_DIR}"/*; do
 done
 shopt -u nullglob
 
-echo "has_changes=${ANY_CHANGES}" >> "$GITHUB_OUTPUT"
-echo "all=$(jq -cr '.all' <<< "${RESULTS}")" >> "$GITHUB_OUTPUT"
-echo "changed=$(jq -cr '.changed' <<< "${RESULTS}")" >> "$GITHUB_OUTPUT"
-echo "config=$(jq -cr '.details' <<< "${RESULTS}")" >> "$GITHUB_OUTPUT"
+echo "has_changes=${ANY_CHANGES}" >> "${GITHUB_OUTPUT}"
+echo "all=$(jq -cr '.all' <<< "${RESULTS}")" >> "${GITHUB_OUTPUT}"
+echo "changed=$(jq -cr '.changed' <<< "${RESULTS}")" >> "${GITHUB_OUTPUT}"
+echo "config=$(jq -cr '.details' <<< "${RESULTS}")" >> "${GITHUB_OUTPUT}"
 
 echo "Results:"
 jq <<< "${RESULTS}"
