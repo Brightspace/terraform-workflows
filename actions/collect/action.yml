@@ -21,7 +21,7 @@ runs:
     - id: setup
       shell: bash
       run: |
-        echo "::set-output name=details_dir::$(mktemp -d)"
+        echo "details_dir=$(mktemp -d)" >> "$GITHUB_OUTPUT"
 
     - run: ${{ github.action_path }}/download.sh
       shell: bash

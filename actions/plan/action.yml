@@ -43,7 +43,7 @@ runs:
     - id: setup
       shell: bash
       run: |
-        echo "::set-output name=artifacts_dir::$(mktemp -d)"
+        echo "artifacts_dir=$(mktemp -d)" >> "$GITHUB_OUTPUT"
 
     - id: plan
       working-directory: ${{ fromJson(inputs.config).workspace_path }}

@@ -11,7 +11,7 @@ onexit() {
 
 DOWNLOAD_FILE=$(mktemp --suffix .tar.gz)
 EXTRACTION_DIR=$(mktemp -d)
-echo "::set-output name=artifacts_dir::${EXTRACTION_DIR}"
+echo "artifacts_dir=${EXTRACTION_DIR}" >> "$GITHUB_OUTPUT"
 
 ASSUMEROLE_RESULT=$(aws \
 	sts assume-role \

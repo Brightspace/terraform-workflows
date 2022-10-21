@@ -49,14 +49,14 @@ case "${PLAN_EXIT_CODE}" in
 
 	"0")
 		# success with no changes
-		echo "::set-output name=has_changes::false"
-		echo "::set-output name=plan_json::{}"
+		echo "has_changes=false" >> "$GITHUB_OUTPUT"
+		echo "plan_json={}" >> "$GITHUB_OUTPUT"
 		exit 0
 		;;
 
 	"2")
 		# success with changes
-		echo "::set-output name=has_changes::true"
+		echo "has_changes=true" >> "$GITHUB_OUTPUT"
 		;;
 
 	*)
@@ -93,4 +93,4 @@ else
 fi
 
 terraform show -json "${ARTIFACTS_DIR}/terraform.plan" > "${ARTIFACTS_DIR}/terraform.plan.json"
-echo "::set-output name=plan_json_path::${ARTIFACTS_DIR}/terraform.plan.json"
+echo "plan_json_path=${ARTIFACTS_DIR}/terraform.plan.json" >> "$GITHUB_OUTPUT"
