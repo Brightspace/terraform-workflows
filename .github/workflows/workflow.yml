@@ -117,7 +117,7 @@ jobs:
 
     steps:
     - id: collect
-      uses: Brightspace/terraform-workflows@collect/v2
+      uses: Brightspace/terraform-workflows/actions/collect@v3
 
     outputs:
       has_changes: ${{ steps.collect.outputs.has_changes }}

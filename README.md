@@ -219,6 +219,9 @@ referencing these actions has changed:
 - uses: Brightspace/terraform-workflows@plan/v2
 + uses: Brightspace/terraform-workflows/actions/plan@v3
 
+- uses: Brightspace/terraform-workflows@collect/v2
++ uses: Brightspace/terraform-workflows/actions/collect@v3
+
 - uses: Brightspace/terraform-workflows@apply/v2
 + uses: Brightspace/terraform-workflows/actions/apply@v3
 ```
