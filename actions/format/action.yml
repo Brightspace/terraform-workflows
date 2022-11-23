@@ -42,14 +42,17 @@ runs:
     - name: create format-fixing PR
       if: failure() && steps.format.outputs.format_branch
       uses: Brightspace/third-party-actions@actions/github-script
+      env:
+        BRANCH_NAME: steps.format.outputs.format_branch
       with:
         script: |
+          const { BRANCH_NAME } = process.env
           const { data: newPr } = await github.pulls.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
             title: `Auto format #${context.payload.number}`,
             body: `Auto format #${context.payload.number}`,
-            head: "${{ steps.format.outputs.format_branch }}",
+            head: BRANCH_NAME,
             base: context.payload.pull_request.head.ref,
             draft: true
           });
