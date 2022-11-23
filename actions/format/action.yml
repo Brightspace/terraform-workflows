@@ -1,0 +1,61 @@
+name: 'Terraform Format'
+
+inputs:
+
+  terraform_version:
+    description: Which version of terraform to use
+    required: true
+
+  workspace_path:
+    description: Path to the terraform workspace
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+    - uses: Brightspace/third-party-actions@hashicorp/setup-terraform
+      with:
+        terraform_version: ${{ inputs.terraform_version }}
+        terraform_wrapper: false
+
+    - name: format
+      working-directory: ${{ inputs.workspace_path }}
+      id: format
+      env:
+        GIT_AUTHOR_NAME: Terraform Format Bot
+        GIT_AUTHOR_EMAIL: tf-format-bot@github.d2l
+        GIT_COMMITTER_NAME: Terraform Format Bot
+        GIT_COMMITTER_EMAIL: tf-format-bot@github.d2l
+      shell: bash
+      run: |
+        if [ "$( terraform fmt -recursive )" == "" ]; then
+          exit 0
+        fi
+        git add *
+        git commit -m 'auto format'
+        RANDOM_STR=$( head /dev/urandom | tr -dc a-z0-9 | head -c 4 )
+        git push origin "HEAD:refs/heads/auto-format-$RANDOM_STR"
+        echo "format_branch=auto-format-$RANDOM_STR" >> $GITHUB_OUTPUT
+        exit 1
+
+    - name: create format-fixing PR
+      if: failure() && steps.format.outputs.format_branch
+      uses: Brightspace/third-party-actions@actions/github-script
+      with:
+        script: |
+          const { data: newPr } = await github.pulls.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `Auto format #${context.payload.number}`,
+            body: `Auto format #${context.payload.number}`,
+            head: "${{ steps.format.outputs.format_branch }}",
+            base: context.payload.pull_request.head.ref,
+            draft: true
+          });
+          await github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `PR #${newPr.number} created to fix Terraform format.`
+          })
