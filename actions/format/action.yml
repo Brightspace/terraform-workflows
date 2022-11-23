@@ -43,16 +43,16 @@ runs:
       if: failure() && steps.format.outputs.format_branch
       uses: Brightspace/third-party-actions@actions/github-script
       env:
-        BRANCH_NAME: steps.format.outputs.format_branch
+        BRANCHNAME: steps.format.outputs.format_branch
       with:
         script: |
-          const { BRANCH_NAME } = process.env
+          const { BRANCHNAME } = process.env
           const { data: newPr } = await github.pulls.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
             title: `Auto format #${context.payload.number}`,
             body: `Auto format #${context.payload.number}`,
-            head: BRANCH_NAME,
+            head: BRANCHNAME,
             base: context.payload.pull_request.head.ref,
             draft: true
           });
