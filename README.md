@@ -219,19 +219,12 @@ on:
       - 'terraform/**'
       - '.github/workflows/terraform-format.yml'
 jobs:
-  format:
-    runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 5
-    steps:
-      - name: checkout
-        uses: Brightspace/third-party-actions@actions/checkout
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      - name: Format
-        uses: Brightspace/terraform-workflows/actions/format@v3
-        with:
-          terraform_version: 0.14.4
-          workspace_path: 'terraform'
+  call-workflow:
+    uses: Brightspace/terraform-workflows/.github/workflows/format.yml@v3
+    with:
+      terraform_version: 0.14.4
+      base_path: '.'
+
 
 ```
 
@@ -241,7 +234,7 @@ jobs:
 **Required**.
 The version of terraform to install and use (e.g. `1.2.1`).
 
-##### `workspace_path` (`string`)
+##### `base_path` (`string`)
 
 **Required**.
 The path from which terraform fmt will run (e.g. `terraform` or `.`)
