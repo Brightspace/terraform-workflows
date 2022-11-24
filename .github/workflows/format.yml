@@ -2,13 +2,17 @@ name: 'Terraform Format'
 
 on:
   workflow_call:
-    terraform_version:
-      description: Which version of terraform to use
-      required: true
+    inputs:
+      terraform_version:
+        description: Which version of terraform to use
+        type: string
+        required: true
 
-    base_path:
-      description: Path to the terraform workspace
-      required: true
+      base_path:
+        description: Path to the terraform workspace
+        type: string
+        required: true
+
 jobs:
   format:
     name: Format
