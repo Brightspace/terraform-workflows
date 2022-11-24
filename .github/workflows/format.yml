@@ -23,7 +23,7 @@ jobs:
         with:
           terraform_version: ${{ inputs.terraform_version }}
           terraform_wrapper: false
-
+      - uses: Brightspace/third-party-actions@actions/checkout
       - name: format
         working-directory: ${{ inputs.base_path }}
         id: format
