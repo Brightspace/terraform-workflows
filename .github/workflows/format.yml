@@ -9,7 +9,7 @@ on:
         required: true
 
       base_path:
-        description: Path to the terraform workspace
+        description: Base path to all terraform files
         type: string
         required: true
 
