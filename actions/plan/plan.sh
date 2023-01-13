@@ -7,6 +7,7 @@ onexit() {
 	set +u
 
 	rm "${BACKEND_CONFIG}"
+	rm "${GITHUB_STEP_SUMMARY_PLAN_OUTPUT}" 2> /dev/null || true
 }
 
 REFRESH=""
@@ -68,12 +69,14 @@ esac
 set -e
 
 # output planned changes to step summary
-let SUMMARY_PLAN_TEXT_TRUNCATE_BYTES=1048576-20
-echo '```terraform' > ${GITHUB_STEP_SUMMARY}
+GITHUB_STEP_SUMMARY_PLAN_OUTPUT=$(mktemp)
 terraform show "${ARTIFACTS_DIR}/terraform.plan" -no-color \
 	| sed --silent '/Terraform will perform the following actions/,$p' \
-	| head --bytes=${SUMMARY_PLAN_TEXT_TRUNCATE_BYTES} \
-	>> ${GITHUB_STEP_SUMMARY}
+	> "${GITHUB_STEP_SUMMARY_PLAN_OUTPUT}"
+
+let SUMMARY_PLAN_TEXT_TRUNCATE_BYTES=1048576-20
+echo '```terraform' > ${GITHUB_STEP_SUMMARY}
+head --bytes=${SUMMARY_PLAN_TEXT_TRUNCATE_BYTES} "${GITHUB_STEP_SUMMARY_PLAN_OUTPUT}" >> ${GITHUB_STEP_SUMMARY}
 echo '```' >> ${GITHUB_STEP_SUMMARY}
 
 # print planned changes to console
