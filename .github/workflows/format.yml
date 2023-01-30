@@ -52,7 +52,7 @@ jobs:
         with:
           script: |
             const { BRANCH_NAME } = process.env
-            const { data: newPr } = await github.pulls.create({
+            const { data: newPr } = await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `Auto format #${context.payload.number}`,
@@ -61,7 +61,7 @@ jobs:
               base: context.payload.pull_request.head.ref,
               draft: true
             });
-            await github.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
