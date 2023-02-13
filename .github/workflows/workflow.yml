@@ -28,7 +28,7 @@ on:
         type: string
       
       checkout_ref:
-        description: The ref to checkout for all steps of terraform. Behaviour is identical to checkout@v3
+        description: The ref to checkout for terraform PR plan. Behaviour is identical to checkout@v3
         required: false
         type: string
 
@@ -102,8 +102,6 @@ jobs:
 
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
-      with:
-        ref: ${{ inputs.checkout_ref }}
 
     - name: 'Assert: Branch is up to date'
       uses: Brightspace/assert-git-remote-ref-action@master
@@ -153,8 +151,6 @@ jobs:
 
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
-      with:
-        ref: ${{ inputs.checkout_ref }}
 
     - uses: Brightspace/terraform-workflows/actions/apply@v3
       with:
