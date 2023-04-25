@@ -53,12 +53,12 @@ jobs:
       config: ${{ steps.parse.outputs.config }}
 
 
-  plan_pr:
-    name: Plan [PR]
+  plan:
+    name: Plan
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: 60
 
-    if: ${{ github.event_name == 'pull_request' }}
+    environment: ${{ github.event_name != 'pull_request' && 'preflight' || null }}
 
     needs: configure
 
@@ -69,6 +69,13 @@ jobs:
 
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
+
+    - if: ${{ github.event_name != 'pull_request' }}
+      name: 'Assert: Branch is up to date'
+      uses: Brightspace/assert-git-remote-ref-action@master
+      with:
+        remote: origin
+        ref: ${{ inputs.default_branch }}
 
     - uses: Brightspace/terraform-workflows/actions/plan@v3
       with:
@@ -78,42 +85,14 @@ jobs:
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
 
 
-  plan:
-    name: Plan
-    runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 60
-
-    if: ${{ github.event_name != 'pull_request' }}
-    environment: preflight
-
-    needs: configure
-
-    strategy:
-      fail-fast: false
-      matrix:
-        environment: ${{ fromJson(needs.configure.outputs.environments) }}
-
-    steps:
-    - uses: Brightspace/third-party-actions@actions/checkout
-
-    - name: 'Assert: Branch is up to date'
-      uses: Brightspace/assert-git-remote-ref-action@master
-      with:
-        remote: origin
-        ref: ${{ inputs.default_branch }}
-
-    - uses: Brightspace/terraform-workflows/actions/plan@v3
-      with:
-        config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
-        terraform_version: ${{ inputs.terraform_version }}
-
-
   collect:
     name: Collect
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: 10
 
     needs: plan
+
+    if: ${{ github.event_name != 'pull_request' }}
 
     steps:
     - id: collect
