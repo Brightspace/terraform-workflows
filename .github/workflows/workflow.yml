@@ -92,6 +92,8 @@ jobs:
 
     needs: plan
 
+    if: ${{ github.event_name != 'pull_request' }}
+
     steps:
     - id: collect
       uses: Brightspace/terraform-workflows/actions/collect@v3
