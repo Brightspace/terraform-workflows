@@ -11,19 +11,19 @@ onexit() {
 
 REFRESH=""
 if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
-	ROLE_KIND="reader"
+	ROLE_KIND="r"
 
 	if [ "${REFRESH_ON_PR}" == "false" ]; then
 		REFRESH="-refresh=false"
 	fi
 else
-	ROLE_KIND="manager"
+	ROLE_KIND="m"
 fi
 
 BACKEND_CONFIG=$(mktemp)
 cat > "${BACKEND_CONFIG}" << EOF
 region         = "us-east-1"
-role_arn       = "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+tfstate-${ROLE_KIND}"
+role_arn       = "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+${ROLE_KIND}"
 bucket         = "d2l-terraform-state"
 dynamodb_table = "d2l-terraform-state"
 key            = "github/${GITHUB_REPOSITORY}/${ENVIRONMENT}.tfstate"
