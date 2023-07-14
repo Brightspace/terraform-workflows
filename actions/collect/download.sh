@@ -14,7 +14,7 @@ DOWNLOAD_DIR=$(mktemp -d)
 
 ASSUMEROLE_RESULT=$(aws \
 	sts assume-role \
-	--role-arn "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+tfstate-reader" \
+	--role-arn "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+r" \
 	--role-session-name "githubaction-sha-${GITHUB_SHA}" \
 )
 
