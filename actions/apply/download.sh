@@ -15,7 +15,7 @@ echo "artifacts_dir=${EXTRACTION_DIR}" >> "${GITHUB_OUTPUT}"
 
 ASSUMEROLE_RESULT=$(aws \
 	sts assume-role \
-	--role-arn "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+tfstate-manager" \
+	--role-arn "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+m" \
 	--role-session-name "githubaction-sha-${GITHUB_SHA}" \
 )
 
