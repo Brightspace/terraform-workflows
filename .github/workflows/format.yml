@@ -24,6 +24,8 @@ jobs:
           terraform_version: ${{ inputs.terraform_version }}
           terraform_wrapper: false
       - uses: Brightspace/third-party-actions@actions/checkout
+        with:
+          ref: ${{ github.head_ref || github.ref }}
       - name: format
         working-directory: ${{ inputs.base_path }}
         id: format
