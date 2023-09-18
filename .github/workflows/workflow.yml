@@ -107,7 +107,7 @@ jobs:
   apply:
     name: Apply
     runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     needs: collect
 
