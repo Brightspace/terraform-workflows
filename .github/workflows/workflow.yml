@@ -27,6 +27,11 @@ on:
         required: true
         type: string
 
+      apply_timeout:
+        required: false
+        default: 60
+        type: number
+
     outputs:
       had_changes:
         value: ${{ jobs.collect.outputs.has_changes }}
@@ -107,7 +112,7 @@ jobs:
   apply:
     name: Apply
     runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 60
+    timeout-minutes: ${{ inputs.apply_timeout }}
 
     needs: collect
 
