@@ -16,6 +16,17 @@ else
 	ROLE_ARN=$(jq -r '.provider_role_arn_rw' <<< "${ENVCONFIG}")
 fi
 
+if [[ -z "$ROLE_ARN" ]]; then
+	ACCOUNT_ID=$(jq -r '.account_id' <<< "${ENVCONFIG}")
+	SUFFIX=${GITHUB_REPOSITORY/'/'/+}
+	SUFFIX=${SUFFIX/#'BrightspaceHypermediaComponents'/'BHC'}
+	if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+		ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/terraform/tfp+github+${SUFFIX}"
+	else
+		ROLE_ARN="arn:aws:iam::${ACCOUNT_ID}:role/terraform/tfa+github+${SUFFIX}"
+	fi
+fi
+
 D2L_TF_ENVS=$(jq -cr \
 	--argjson envconfig "${ENVCONFIG}" \
 	'. += [$envconfig.environment]
