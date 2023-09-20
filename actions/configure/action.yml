@@ -11,7 +11,7 @@ inputs:
     required: true
 
   account_id:
-    description: AWS Account ID
+    description: AWS account ID
     required: false
 
   provider_role_arn_ro:

@@ -18,6 +18,10 @@ fi
 
 if [[ -z "$ROLE_ARN" ]]; then
 	ACCOUNT_ID=$(jq -r '.account_id' <<< "${ENVCONFIG}")
+	if [[ -z "$ACCOUNT_ID" ]]; then
+		echo '::error ::Either "account_id" or both of "provider_role_arn_ro" and "provider_role_arn_rw" must be provided'
+		exit 1
+	fi
 	SUFFIX=${GITHUB_REPOSITORY/'/'/+}
 	SUFFIX=${SUFFIX/#'BrightspaceHypermediaComponents'/'BHC'}
 	if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then

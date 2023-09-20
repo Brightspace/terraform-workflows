@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - id: parse
-        uses: Brightspace/terraform-workflows/actions/configure/parse@cbao/default-ace-role
+        uses: Brightspace/terraform-workflows/actions/configure/parse@v3
         with:
           config: ${{ inputs.config }}
 
