@@ -135,7 +135,7 @@ The root of the YAML document should be an array of `Account` objects.
 
 ###### `Account.account_id` (`string`)
 
-**Optional**.
+**Recommended**.
 The 12 digit ID of the account where Terraform will be run.
 Required unless both `Account.provider_role_arn_ro` and `Account.provider_role_arn_rw` are provided (see below).
 
