@@ -25,7 +25,7 @@ and follow the steps below.
   * Enter the name of your main branch, e.g. `main`, and click `Add rule`.
 3. Save this environment by clicking `Save protection rules`.
 
-Now create an environment for each of your terraform envirionments/workspaces.
+Now create an environment for each of your terraform environments/workspaces.
 You do this by following the steps below, but use the terraform environment as the environment name.
 i.e. If your workspace is `terraform/environments/prod/ca-central-1`, name the environment `prod/ca-central-1`
 
@@ -87,8 +87,6 @@ data "archive_file" "lambda_package" {
 Now the Terraform workflow can be added to the repository.  Create the `.github/workflows/terraform.yml` in
 your repository with the following content.
 
-Within the content, the `provider_role_arn_{ro,rw}` specified will be the arn of the role, not just the role name.
-
 Each region that you have defined for your workflows will also need to be added as workspaces.  For example,
 in the content below, only `dev/us-east-1`, `prod/ca-central-1` and `prod/us-east-1` are defined.
 
@@ -112,15 +110,13 @@ jobs:
       terraform_version: 1.2.1
       config: |
         # Dev-Project Account
-        - provider_role_arn_ro: "{ terraform plan role in your dev account }"
-          provider_role_arn_rw: "{ terraform apply role in your dev account }"
+        - account_id: "{ your dev account ID }"
           workspaces:
             - environment: dev/us-east-1
               path: terraform/environments/dev/us-east-1
 
         # Prd-Project Account
-        - provider_role_arn_ro: "{ terraform plan role in your prod account }"
-          provider_role_arn_rw: "{ terraform apply role in your prod account }"
+        - account_id: "{ your prod account ID }"
           workspaces:
             - environment: prod/ca-central-1
               path: terraform/environments/prod/ca-central-1
@@ -137,17 +133,25 @@ The `config` input is a YAML string which describes your terraform workspaces.
 The workspaces are grouped by account in order to de-duplicate some shared settings for the common scenario of dev/prod accounts.
 The root of the YAML document should be an array of `Account` objects.
 
+###### `Account.account_id` (`string`)
+
+**Recommended**.
+The 12 digit ID of the account where Terraform will be run.
+Required unless both `Account.provider_role_arn_ro` and `Account.provider_role_arn_rw` are provided (see below).
+
 ###### `Account.provider_role_arn_ro` (`string`)
 
-**Required**.
+**Optional**.
 The read-only role to use when performing terraform plans for pull requests in the account.
-Likely named `terraform-plan` and thus of the form `arn:aws:iam::{accountId}:role/terraform-plan`.
+Only needed if you do not wish to use the auto provisioned Terraform plan role.
+Required if `Account.account_id` isn't provided.
 
 ###### `Account.provider_role_arn_rw` (`string`)
 
-**Required**.
+**Optional**.
 The role to use when performing terraform plan and applies for merged pull requests in the account.
-Likely named `terraform-apply` and thus of the form `arn:aws:iam::{accountId}:role/terraform-apply`.
+Only needed if you do not wish to use the auto provisioned Terraform apply role.
+Required if `Account.account_id` isn't provided.
 
 ###### `Account.provider_role_tfvar` (`string`)
 
@@ -170,7 +174,7 @@ MUST be unique across all accounts and workspaces.
 ###### `Workspace.path` (`string`)
 
 **Required**.
-The path to the terraform workspace within your resository.
+The path to the terraform workspace within your repository.
 
 ###### `Workspace.provider_role_tfvar` (`string`)
 
@@ -183,7 +187,7 @@ Defaults to the configured account value else to `terraform_role_arn`.
 ##### `default_branch` (`string`)
 
 **Optional**.
-When running on the main branch, the workflow asserts that it is running on the latest commit so old builds aren't accidently re-run and applied.
+When running on the main branch, the workflow asserts that it is running on the latest commit so old builds aren't accidentally re-run and applied.
 If you run into this restriction when trying to revert to an old state by running an old build, you should open a PR reverting any source changes and merge that instead.
 Defaults to `main`.
 

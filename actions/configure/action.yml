@@ -10,13 +10,17 @@ inputs:
     description: Path to the terraform workspace
     required: true
 
+  account_id:
+    description: AWS account ID
+    required: false
+
   provider_role_arn_ro:
     description: Role ARN to provide as a tfvar for PRs
-    required: true
+    required: false
 
   provider_role_arn_rw:
     description: Role ARN to provide as a tfvar post-merge
-    required: true
+    required: false
 
   provider_role_tfvar:
     descritpion: tfvar name to use when specifying the provider role ARN
