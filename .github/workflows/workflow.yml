@@ -32,6 +32,12 @@ on:
         default: 60
         type: number
 
+      artifacts_url:
+        description: Download an archive from the specified url and extract it under .artifacts in the root of the workspace
+        required: false
+        type: string
+        default: ""
+
     outputs:
       had_changes:
         value: ${{ jobs.collect.outputs.has_changes }}
@@ -82,6 +88,13 @@ jobs:
         remote: origin
         ref: ${{ inputs.default_branch }}
 
+    - if: ${{ inputs.artifacts_url != '' }}
+      name: 'Extract artifacts'
+      uses: Brightspace/s3-artifact-actions/extract@master
+      with:
+        path: .artifacts
+        artifacts_url: inputs.artifacts_url
+
     - uses: Brightspace/terraform-workflows/actions/plan@v3
       with:
         comment_plan: ${{ inputs.comment_plan }}
@@ -128,6 +141,13 @@ jobs:
 
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
+
+    - if: ${{ inputs.artifacts_url != '' }}
+      name: 'Extract artifacts'
+      uses: Brightspace/s3-artifact-actions/extract@master
+      with:
+        path: .artifacts
+        artifacts_url: inputs.artifacts_url
 
     - uses: Brightspace/terraform-workflows/actions/apply@v3
       with:
