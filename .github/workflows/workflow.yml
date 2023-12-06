@@ -93,7 +93,7 @@ jobs:
       uses: Brightspace/s3-artifact-actions/extract@master
       with:
         path: .artifacts
-        artifacts_url: inputs.artifacts_url
+        artifacts_url: ${{ inputs.artifacts_url }}
 
     - uses: Brightspace/terraform-workflows/actions/plan@v3
       with:
