@@ -38,6 +38,11 @@ on:
         type: string
         default: ""
 
+      checkout_ref:
+        required: false
+        default: main
+        type: string
+
     outputs:
       had_changes:
         value: ${{ jobs.collect.outputs.has_changes }}
@@ -80,6 +85,8 @@ jobs:
 
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
+      with:
+        ref: ${{ inputs.checkout_ref }}
 
     - if: ${{ github.event_name != 'pull_request' }}
       name: 'Assert: Branch is up to date'
@@ -141,6 +148,8 @@ jobs:
 
     steps:
     - uses: Brightspace/third-party-actions@actions/checkout
+      with:
+        ref: ${{ inputs.checkout_ref }}
 
     - uses: Brightspace/terraform-workflows/actions/apply@v3
       with:
