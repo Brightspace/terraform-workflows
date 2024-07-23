@@ -18,6 +18,10 @@ inputs:
     description: true/false. Whether to do a refresh for PR plans.
     default: true
 
+  skip_archive:
+    description: true/false. Whether to skip archiving the plan and artifacts. Please note that the 'collect' action relies on things being archived.
+    default: false
+
   terraform_version:
     description: Which version of terraform to use
     required: true
@@ -66,6 +70,7 @@ runs:
         TERRAFORM_VERSION_INPUT: ${{ inputs.terraform_version }}
 
     - run: ${{ github.action_path }}/archive.sh
+      if: ${{ !inputs.skip_archive }}
       shell: bash
       env:
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
