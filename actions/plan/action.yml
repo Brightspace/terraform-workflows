@@ -19,7 +19,7 @@ inputs:
     default: true
 
   skip_archive:
-    description: true/false. Whether to skip archiving the plan and artifacts. Please note that the 'collect' and 'plan' actions rely on things being archived.
+    description: true/false. Whether to skip archiving the plan and artifacts. Please note that the 'collect' and 'apply' actions rely on things being archived.
     default: false
 
   terraform_version:
