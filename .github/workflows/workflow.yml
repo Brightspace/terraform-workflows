@@ -10,6 +10,7 @@ on:
         default: true
 
       config:
+        description: A JSON (with comments) or YAML config string. JSON should be preferred
         required: true
         type: string
 
@@ -53,6 +54,8 @@ jobs:
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: 10
 
+    if: ${{ !startsWith(inputs.config, '[') }}
+
     steps:
       - id: parse
         uses: Brightspace/terraform-workflows/actions/configure/parse@v3
@@ -74,12 +77,27 @@ jobs:
 
     needs: configure
 
+    # configure is conditionally skipped depending on our inputs
+    if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJson(needs.configure.outputs.environments) }}
+        environment: ${{ startsWith(inputs.config, '[') && fromJson(inputs.config).*.workspaces.*.environment || fromJson(needs.configure.outputs.environments) }}
 
     steps:
+    # Potentionally duplicate work from configure, but easier to always
+    # reference this step instead of both steps.parse/needs.configure
+    # depending on which is populated
+    - id: parse
+      uses: Brightspace/terraform-workflows/actions/configure/parse@v3
+      with:
+        # GHA's fromJson() supports comments in JSON strings which is nice from
+        # an end-user perspective (e.g. naming account ids). toJson(fromJson())
+        # is used in order to strip these comments out before parsing it ourselves
+        config: ${{ startsWith(inputs.config, '[') && toJson(fromJson(inputs.config)) || inputs.config }}
+        max_environments: 50
+
     - uses: Brightspace/third-party-actions@actions/checkout
 
     - if: ${{ github.event_name != 'pull_request' }}
@@ -93,14 +111,14 @@ jobs:
       name: 'Extract artifacts'
       uses: Brightspace/s3-artifact-actions/extract@master
       with:
-        path: ${{ fromJson(needs.configure.outputs.config)[matrix.environment].workspace_path }}/.artifacts
+        path: ${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}/.artifacts
         artifacts_url: ${{ inputs.artifacts_url }}
 
     - id: plan
       uses: Brightspace/terraform-workflows/actions/plan@v3
       with:
         comment_plan: ${{ inputs.comment_plan }}
-        config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
+        config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
 
@@ -127,7 +145,7 @@ jobs:
         )
         echo "changed_env_${ENVIRONMENT_INDEX}=${ENVIRONMENT}" >> "${GITHUB_OUTPUT}"
       env:
-        ENVIRONMENTS: ${{ needs.configure.outputs.environments }}
+        ENVIRONMENTS: ${{ steps.parse.outputs.environments }}
         ENVIRONMENT: ${{ matrix.environment }}
 
     outputs:
@@ -187,9 +205,14 @@ jobs:
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: ${{ inputs.apply_timeout }}
 
+    # We don't directly need configure, but need to make sure it didn't fail
     needs: [configure, plan]
 
-    if: ${{ github.event_name != 'pull_request' && toJson(needs.plan.outputs.*) != '[]' }}
+    # 1st line: configure is conditionally skipped depending on our inputs
+    # 2nd line: only run on merge and only when there's changes
+    if: |
+      always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+      && github.event_name != 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
 
     strategy:
       fail-fast: false
@@ -200,6 +223,14 @@ jobs:
     concurrency: ${{ matrix.environment }}
 
     steps:
+    - id: parse
+      uses: Brightspace/terraform-workflows/actions/configure/parse@v3
+      with:
+        # GHA's fromJson() supports comments in JSON strings which is nice from
+        # an end-user perspective (e.g. naming account ids). toJson(fromJson())
+        # is used in order to strip these comments out before parsing it ourselves
+        config: ${{ startsWith(inputs.config, '[') && toJson(fromJson(inputs.config)) || inputs.config }}
+
     - uses: Brightspace/third-party-actions@actions/checkout
 
     - uses: Brightspace/terraform-workflows/actions/apply@v3
@@ -208,5 +239,5 @@ jobs:
           {
             "terraform_version": "${{ inputs.terraform_version }}",
             "environment": "${{ matrix.environment }}",
-            "workspace_path": "${{ fromJson(needs.configure.outputs.config)[matrix.environment].workspace_path }}"
+            "workspace_path": "${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}"
           }
