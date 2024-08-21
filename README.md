@@ -71,7 +71,7 @@ on:
 jobs:
 
   terraform:
-    uses: Brightspace/terraform-workflows/.github/workflows/workflow.yml@v3
+    uses: Brightspace/terraform-workflows/.github/workflows/workflow.yml@v4
     secrets: inherit
     with:
       terraform_version: 1.2.1
@@ -101,11 +101,9 @@ jobs:
 ##### `config` (`Account[]`)
 
 **Required**.
-The `config` input is a JSON (with comments) or YAML string which describes your terraform workspaces.
+The `config` input is a JSON (with comments) string which describes your terraform workspaces.
 The workspaces are grouped by account in order to de-duplicate some shared settings for the common scenario of dev/prod accounts.
 The root of the document should be an array of `Account` objects.
-JSON should be preferred as it uses one fewer job.
-The config _MUST_ start with the `[` character to receive the optimization.
 
 ###### `Account.account_id` (`string`)
 
@@ -198,7 +196,7 @@ on:
       - '.github/workflows/terraform-format.yml'
 jobs:
   call-workflow:
-    uses: Brightspace/terraform-workflows/.github/workflows/format.yml@v3
+    uses: Brightspace/terraform-workflows/.github/workflows/format.yml@v4
     with:
       terraform_version: 0.14.4
       base_path: '.'
@@ -226,17 +224,17 @@ referencing these actions has changed:
 
 ```diff
 - uses: Brightspace/terraform-workflows@configure/v2
-+ uses: Brightspace/terraform-workflows/actions/configure@v3
++ uses: Brightspace/terraform-workflows/actions/configure@v4
 
 - uses: Brightspace/terraform-workflows/finish@configure/v2
-+ uses: Brightspace/terraform-workflows/actions/configure/finish@v3
++ uses: Brightspace/terraform-workflows/actions/configure/finish@v4
 
 - uses: Brightspace/terraform-workflows@plan/v2
-+ uses: Brightspace/terraform-workflows/actions/plan@v3
++ uses: Brightspace/terraform-workflows/actions/plan@v4
 
 - uses: Brightspace/terraform-workflows@collect/v2
-+ uses: Brightspace/terraform-workflows/actions/collect@v3
++ uses: Brightspace/terraform-workflows/actions/collect@v4
 
 - uses: Brightspace/terraform-workflows@apply/v2
-+ uses: Brightspace/terraform-workflows/actions/apply@v3
++ uses: Brightspace/terraform-workflows/actions/apply@v4
 ```

@@ -10,7 +10,7 @@ on:
         default: true
 
       config:
-        description: A JSON (with comments) or YAML config string. JSON should be preferred
+        description: A JSON (with comments) config string
         required: true
         type: string
 
@@ -49,25 +49,6 @@ env:
   AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
 jobs:
-  configure:
-    name: Configure
-    runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 10
-
-    if: ${{ !startsWith(inputs.config, '[') }}
-
-    steps:
-      - id: parse
-        uses: Brightspace/terraform-workflows/actions/configure/parse@v3
-        with:
-          config: ${{ inputs.config }}
-          max_environments: 50
-
-    outputs:
-      environments: ${{ steps.parse.outputs.environments }}
-      config: ${{ steps.parse.outputs.config }}
-
-
   plan:
     name: Plan
     runs-on: [self-hosted, Linux, AWS]
@@ -75,27 +56,19 @@ jobs:
 
     environment: ${{ github.event_name != 'pull_request' && 'preflight' || null }}
 
-    needs: configure
-
-    # configure is conditionally skipped depending on our inputs
-    if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
-
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ startsWith(inputs.config, '[') && fromJson(inputs.config).*.workspaces.*.environment || fromJson(needs.configure.outputs.environments) }}
+        environment: ${{ fromJson(inputs.config).*.workspaces.*.environment }}
 
     steps:
-    # Potentionally duplicate work from configure, but easier to always
-    # reference this step instead of both steps.parse/needs.configure
-    # depending on which is populated
     - id: parse
-      uses: Brightspace/terraform-workflows/actions/configure/parse@v3
+      uses: Brightspace/terraform-workflows/actions/parse-config@v4
       with:
         # GHA's fromJson() supports comments in JSON strings which is nice from
         # an end-user perspective (e.g. naming account ids). toJson(fromJson())
         # is used in order to strip these comments out before parsing it ourselves
-        config: ${{ startsWith(inputs.config, '[') && toJson(fromJson(inputs.config)) || inputs.config }}
+        config: ${{ toJson(fromJson(inputs.config)) }}
         max_environments: 50
 
     - uses: Brightspace/third-party-actions@actions/checkout
@@ -115,7 +88,7 @@ jobs:
         artifacts_url: ${{ inputs.artifacts_url }}
 
     - id: plan
-      uses: Brightspace/terraform-workflows/actions/plan@v3
+      uses: Brightspace/terraform-workflows/actions/plan@v4
       with:
         comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
@@ -205,14 +178,9 @@ jobs:
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: ${{ inputs.apply_timeout }}
 
-    # We don't directly need configure, but need to make sure it didn't fail
-    needs: [configure, plan]
+    needs: plan
 
-    # 1st line: configure is conditionally skipped depending on our inputs
-    # 2nd line: only run on merge and only when there's changes
-    if: |
-      always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
-      && github.event_name != 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
+    if: github.event_name != 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
 
     strategy:
       fail-fast: false
@@ -224,16 +192,16 @@ jobs:
 
     steps:
     - id: parse
-      uses: Brightspace/terraform-workflows/actions/configure/parse@v3
+      uses: Brightspace/terraform-workflows/actions/parse-config@v4
       with:
         # GHA's fromJson() supports comments in JSON strings which is nice from
         # an end-user perspective (e.g. naming account ids). toJson(fromJson())
         # is used in order to strip these comments out before parsing it ourselves
-        config: ${{ startsWith(inputs.config, '[') && toJson(fromJson(inputs.config)) || inputs.config }}
+        config: ${{ toJson(fromJson(inputs.config)) }}
 
     - uses: Brightspace/third-party-actions@actions/checkout
 
-    - uses: Brightspace/terraform-workflows/actions/apply@v3
+    - uses: Brightspace/terraform-workflows/actions/apply@v4
       with:
         config: |
           {
