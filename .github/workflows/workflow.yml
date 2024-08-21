@@ -104,6 +104,13 @@ jobs:
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
 
+    # Matrixed jobs overwrite eachother's outputs if they use the same name.
+    # Unfortunately though, job outputs need to be statically defined in the yml
+    # Step outputs are dynamic though, as well as the _population_ of job outputs
+    # (based on the existence of their configured value). This step uniquely maps
+    # the environment name to one of the statically defined outputs below. The
+    # apply job can then consume the sparse set of outputs that were assigned a
+    # value via `needs.plan.outputs.*`
     - if: ${{ steps.plan.outputs.has_changes == 'true' }}
       name: Mark as changed
       id: changed
