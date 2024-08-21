@@ -76,19 +76,24 @@ jobs:
     with:
       terraform_version: 1.2.1
       config: |
-        # Dev-Project Account
-        - account_id: "{ your dev account ID }"
-          workspaces:
-            - environment: dev/us-east-1
-              path: terraform/environments/dev/us-east-1
-
-        # Prd-Project Account
-        - account_id: "{ your prod account ID }"
-          workspaces:
-            - environment: prod/ca-central-1
-              path: terraform/environments/prod/ca-central-1
-            - environment: prod/us-east-1
-              path: terraform/environments/prod/us-east-1
+        [{
+          // Dev-Project Account
+          "account_id": "< your dev account ID >",
+          "workspaces": [{
+            "environment": "dev/us-east-1",
+            "path": "terraform/environments/dev/us-east-1"
+          }]
+        }, {
+          // Prd-Project Account
+          "account_id": "< your prod account ID >",
+          "workspaces": [{
+            "environment": "prod/ca-central-1",
+            "path": "terraform/environments/prod/ca-central-1"
+          }, {
+            "environment": "prod/us-east-1",
+            "path": "terraform/environments/prod/us-east-1"
+          ]
+        }]
 ```
 
 #### Inputs
@@ -96,9 +101,11 @@ jobs:
 ##### `config` (`Account[]`)
 
 **Required**.
-The `config` input is a YAML string which describes your terraform workspaces.
+The `config` input is a JSON (with comments) or YAML string which describes your terraform workspaces.
 The workspaces are grouped by account in order to de-duplicate some shared settings for the common scenario of dev/prod accounts.
-The root of the YAML document should be an array of `Account` objects.
+The root of the document should be an array of `Account` objects.
+JSON should be preferred as it uses one fewer job.
+The config _MUST_ start with the `[` character to receive the optimization.
 
 ###### `Account.account_id` (`string`)
 
