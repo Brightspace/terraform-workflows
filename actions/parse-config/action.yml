@@ -1,4 +1,4 @@
-name: 'Terraform Configure'
+name: 'Parse Terraform Config'
 
 inputs:
 

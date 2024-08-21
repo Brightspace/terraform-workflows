@@ -37,7 +37,7 @@ echo "${CONFIG}" \
 			"workspace_path": .path
 		}' \
 	 	- \
-	| xargs -d'\n' -I{} env ENVCONFIG='{}' "${HERE}/../configure.sh"
+	| xargs -d'\n' -I{} env ENVCONFIG='{}' "${HERE}/configure.sh"
 
 
 echo "environments=$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/envs)" >> "${GITHUB_OUTPUT}"
