@@ -63,7 +63,7 @@ jobs:
 
     steps:
     - id: parse
-      uses: Brightspace/terraform-workflows/actions/parse-config@v4
+      uses: Brightspace/terraform-workflows/actions/parse-config@omsmith/remove-yaml
       with:
         # GHA's fromJson() supports comments in JSON strings which is nice from
         # an end-user perspective (e.g. naming account ids). toJson(fromJson())
@@ -88,7 +88,7 @@ jobs:
         artifacts_url: ${{ inputs.artifacts_url }}
 
     - id: plan
-      uses: Brightspace/terraform-workflows/actions/plan@v4
+      uses: Brightspace/terraform-workflows/actions/plan@omsmith/remove-yaml
       with:
         comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
@@ -192,7 +192,7 @@ jobs:
 
     steps:
     - id: parse
-      uses: Brightspace/terraform-workflows/actions/parse-config@v4
+      uses: Brightspace/terraform-workflows/actions/parse-config@omsmith/remove-yaml
       with:
         # GHA's fromJson() supports comments in JSON strings which is nice from
         # an end-user perspective (e.g. naming account ids). toJson(fromJson())
@@ -201,7 +201,7 @@ jobs:
 
     - uses: Brightspace/third-party-actions@actions/checkout
 
-    - uses: Brightspace/terraform-workflows/actions/apply@v4
+    - uses: Brightspace/terraform-workflows/actions/apply@omsmith/remove-yaml
       with:
         config: |
           {
