@@ -5,6 +5,11 @@ inputs:
   config:
     required: true
 
+  max_environments:
+    required: false
+    type: number
+    default: -1
+
 outputs:
   environments:
     value: ${{ steps.parse.outputs.environments }}
@@ -22,3 +27,14 @@ runs:
         HERE: ${{ github.action_path }}
         CONFIG: ${{ inputs.config }}
 
+    - if: ${{ inputs.max_environments != -1 }}
+      shell: bash
+      run: |
+        ENVIRONMENT_COUNT=$(jq -cr length <<< "${ENVIRONMENTS}")
+        if [ "${ENVIRONMENT_COUNT}" -gt "${MAX_ENVIRONMENTS}" ]; then
+          >&2 echo "This workflow supports up to ${MAX_ENVIRONMENTS} environments. ${ENVIRONMENT_COUNT} were configured"
+          exit 1
+        fi
+      env:
+        ENVIRONMENTS: ${{ steps.parse.outputs.environments }}
+        MAX_ENVIRONMENTS: ${{ inputs.max_environments }}

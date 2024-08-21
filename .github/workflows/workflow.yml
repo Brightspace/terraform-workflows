@@ -40,7 +40,7 @@ on:
 
     outputs:
       had_changes:
-        value: ${{ jobs.collect.outputs.has_changes }}
+        value: ${{ toJson(jobs.plan.outputs.*) != '[]' }}
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -58,6 +58,7 @@ jobs:
         uses: Brightspace/terraform-workflows/actions/configure/parse@v3
         with:
           config: ${{ inputs.config }}
+          max_environments: 50
 
     outputs:
       environments: ${{ steps.parse.outputs.environments }}
@@ -95,46 +96,105 @@ jobs:
         path: ${{ fromJson(needs.configure.outputs.config)[matrix.environment].workspace_path }}/.artifacts
         artifacts_url: ${{ inputs.artifacts_url }}
 
-    - uses: Brightspace/terraform-workflows/actions/plan@v3
+    - id: plan
+      uses: Brightspace/terraform-workflows/actions/plan@v3
       with:
         comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(needs.configure.outputs.config)[matrix.environment]) }}
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
 
-
-  collect:
-    name: Collect
-    runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 10
-
-    needs: plan
-
-    if: ${{ github.event_name != 'pull_request' }}
-
-    steps:
-    - id: collect
-      uses: Brightspace/terraform-workflows/actions/collect@v3
+    # Matrixed jobs overwrite eachother's outputs if they use the same name.
+    # Unfortunately though, job outputs need to be statically defined in the yml
+    # Step outputs are dynamic though, as well as the _population_ of job outputs
+    # (based on the existence of their configured value). This step uniquely maps
+    # the environment name to one of the statically defined outputs below. The
+    # apply job can then consume the sparse set of outputs that were assigned a
+    # value via `needs.plan.outputs.*`
+    - if: ${{ steps.plan.outputs.has_changes == 'true' }}
+      name: Mark as changed
+      id: changed
+      shell: bash
+      run: |
+        ENVIRONMENT_INDEX=$(jq -cr \
+          --arg environment "${ENVIRONMENT}" \
+          '
+            to_entries[]
+            | select(.value == $environment)
+            | .key
+          ' \
+          <<< "${ENVIRONMENTS}"
+        )
+        echo "changed_env_${ENVIRONMENT_INDEX}=${ENVIRONMENT}" >> "${GITHUB_OUTPUT}"
+      env:
+        ENVIRONMENTS: ${{ needs.configure.outputs.environments }}
+        ENVIRONMENT: ${{ matrix.environment }}
 
     outputs:
-      has_changes: ${{ steps.collect.outputs.has_changes }}
-      changed: ${{ steps.collect.outputs.changed }}
-      config: ${{ steps.collect.outputs.config }}
-
+      changed_env_0: ${{ steps.changed.outputs.changed_env_0 }}
+      changed_env_1: ${{ steps.changed.outputs.changed_env_1 }}
+      changed_env_2: ${{ steps.changed.outputs.changed_env_2 }}
+      changed_env_3: ${{ steps.changed.outputs.changed_env_3 }}
+      changed_env_4: ${{ steps.changed.outputs.changed_env_4 }}
+      changed_env_5: ${{ steps.changed.outputs.changed_env_5 }}
+      changed_env_6: ${{ steps.changed.outputs.changed_env_6 }}
+      changed_env_7: ${{ steps.changed.outputs.changed_env_7 }}
+      changed_env_8: ${{ steps.changed.outputs.changed_env_8 }}
+      changed_env_9: ${{ steps.changed.outputs.changed_env_9 }}
+      changed_env_10: ${{ steps.changed.outputs.changed_env_10 }}
+      changed_env_11: ${{ steps.changed.outputs.changed_env_11 }}
+      changed_env_12: ${{ steps.changed.outputs.changed_env_12 }}
+      changed_env_13: ${{ steps.changed.outputs.changed_env_13 }}
+      changed_env_14: ${{ steps.changed.outputs.changed_env_14 }}
+      changed_env_15: ${{ steps.changed.outputs.changed_env_15 }}
+      changed_env_16: ${{ steps.changed.outputs.changed_env_16 }}
+      changed_env_17: ${{ steps.changed.outputs.changed_env_17 }}
+      changed_env_18: ${{ steps.changed.outputs.changed_env_18 }}
+      changed_env_19: ${{ steps.changed.outputs.changed_env_19 }}
+      changed_env_20: ${{ steps.changed.outputs.changed_env_20 }}
+      changed_env_21: ${{ steps.changed.outputs.changed_env_21 }}
+      changed_env_22: ${{ steps.changed.outputs.changed_env_22 }}
+      changed_env_23: ${{ steps.changed.outputs.changed_env_23 }}
+      changed_env_24: ${{ steps.changed.outputs.changed_env_24 }}
+      changed_env_25: ${{ steps.changed.outputs.changed_env_25 }}
+      changed_env_26: ${{ steps.changed.outputs.changed_env_26 }}
+      changed_env_27: ${{ steps.changed.outputs.changed_env_27 }}
+      changed_env_28: ${{ steps.changed.outputs.changed_env_28 }}
+      changed_env_29: ${{ steps.changed.outputs.changed_env_29 }}
+      changed_env_30: ${{ steps.changed.outputs.changed_env_30 }}
+      changed_env_31: ${{ steps.changed.outputs.changed_env_31 }}
+      changed_env_32: ${{ steps.changed.outputs.changed_env_32 }}
+      changed_env_33: ${{ steps.changed.outputs.changed_env_33 }}
+      changed_env_34: ${{ steps.changed.outputs.changed_env_34 }}
+      changed_env_35: ${{ steps.changed.outputs.changed_env_35 }}
+      changed_env_36: ${{ steps.changed.outputs.changed_env_36 }}
+      changed_env_37: ${{ steps.changed.outputs.changed_env_37 }}
+      changed_env_38: ${{ steps.changed.outputs.changed_env_38 }}
+      changed_env_39: ${{ steps.changed.outputs.changed_env_39 }}
+      changed_env_40: ${{ steps.changed.outputs.changed_env_40 }}
+      changed_env_41: ${{ steps.changed.outputs.changed_env_41 }}
+      changed_env_42: ${{ steps.changed.outputs.changed_env_42 }}
+      changed_env_43: ${{ steps.changed.outputs.changed_env_43 }}
+      changed_env_44: ${{ steps.changed.outputs.changed_env_44 }}
+      changed_env_45: ${{ steps.changed.outputs.changed_env_45 }}
+      changed_env_46: ${{ steps.changed.outputs.changed_env_46 }}
+      changed_env_47: ${{ steps.changed.outputs.changed_env_47 }}
+      changed_env_48: ${{ steps.changed.outputs.changed_env_48 }}
+      changed_env_49: ${{ steps.changed.outputs.changed_env_49 }}
 
   apply:
     name: Apply
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: ${{ inputs.apply_timeout }}
 
-    needs: collect
+    needs: [configure, plan]
 
-    if: ${{ needs.collect.outputs.has_changes == 'true' }}
+    if: ${{ github.event_name != 'pull_request' && toJson(needs.plan.outputs.*) != '[]' }}
 
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJson(needs.collect.outputs.changed) }}
+        environment: ${{ needs.plan.outputs.* }}
 
     environment: ${{ matrix.environment }}
     concurrency: ${{ matrix.environment }}
@@ -144,4 +204,9 @@ jobs:
 
     - uses: Brightspace/terraform-workflows/actions/apply@v3
       with:
-        config: ${{ toJson(fromJson(needs.collect.outputs.config)[matrix.environment]) }}
+        config: |
+          {
+            "terraform_version": "${{ inputs.terraform_version }}",
+            "environment": "${{ matrix.environment }}",
+            "workspace_path": "${{ fromJson(needs.configure.outputs.config)[matrix.environment].workspace_path }}"
+          }
