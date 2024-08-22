@@ -126,6 +126,7 @@ jobs:
 
     - if: github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true'
       name: Apply
+      working-directory: ${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}
       shell: bash
       run: |
         terraform apply -input=false "${PLAN_PATH}"
