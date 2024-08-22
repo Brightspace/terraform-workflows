@@ -130,7 +130,7 @@ jobs:
       run: |
         terraform apply -input=false "${PLAN_PATH}"
       env:
-        PLAN_PATH: ${{ steps.plan.outputs.plan_json_path }}
+        PLAN_PATH: ${{ steps.plan.outputs.plan_path }}
 
     outputs:
       changed_env_0: ${{ steps.changed.outputs.changed_env_0 }}

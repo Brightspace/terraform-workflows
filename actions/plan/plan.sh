@@ -109,4 +109,5 @@ else
 fi
 
 terraform show -json "${ARTIFACTS_DIR}/terraform.plan" > "${ARTIFACTS_DIR}/terraform.plan.json"
+echo "plan_path=${ARTIFACTS_DIR}/terraform.plan" >> "${GITHUB_OUTPUT}"
 echo "plan_json_path=${ARTIFACTS_DIR}/terraform.plan.json" >> "${GITHUB_OUTPUT}"

@@ -27,6 +27,10 @@ inputs:
     required: true
 
 outputs:
+  plan_path:
+    description: Path to plan file
+    value: ${{ steps.plan.outputs.plan_path }}
+
   plan_json_path:
     description: Path to planned changes as JSON
     value: ${{ steps.plan.outputs.plan_json_path }}
