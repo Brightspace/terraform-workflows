@@ -70,7 +70,7 @@ runs:
         TERRAFORM_VERSION_INPUT: ${{ inputs.terraform_version }}
 
     - run: ${{ github.action_path }}/archive.sh
-      if: ${{ !inputs.skip_archive }}
+      if: ${{ inputs.skip_archive !== 'true' }}
       shell: bash
       env:
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
