@@ -102,7 +102,7 @@ jobs:
     # the environment name to one of the statically defined outputs below. The
     # apply job can then consume the sparse set of outputs that were assigned a
     # value via `needs.plan.outputs.*`
-    - if: ${{ steps.plan.outputs.has_changes == 'true' }}
+    - if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true' }}
       name: Mark as changed
       id: changed
       shell: bash
