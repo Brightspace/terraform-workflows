@@ -1,0 +1,18 @@
+inputs:
+
+  artifacts_dir:
+    required: true
+
+  config:
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+    - shell: bash
+      run: ${{ github.action_path }}/download-many.sh
+      env:
+        ARTIFACTS_DIR: ${{ inputs.artifacts_dir }}
+        CONFIG: ${{ inputs.config }}
+        HERE: ${{ github.action_path }}
