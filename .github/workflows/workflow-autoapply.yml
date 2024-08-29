@@ -110,7 +110,7 @@ jobs:
 
     - if: ${{ inputs.artifacts_url != '' }}
       name: 'Extract artifacts'
-      uses: Brightspace/s3-artifact-actions/extract@master
+      uses: Brightspace/s3-artifact-actions/extract@main
       with:
         path: ${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}/.artifacts
         artifacts_url: ${{ inputs.artifacts_url }}
