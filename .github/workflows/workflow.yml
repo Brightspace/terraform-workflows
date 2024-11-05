@@ -47,6 +47,12 @@ on:
         required: false
         type: string
 
+      slack_channel:
+        description: The Slack channel to send notifications to
+        required: false
+        type: string
+        default: ""
+
     outputs:
       had_changes:
         value: ${{ toJson(jobs.plan.outputs.*) != '[]' }}
@@ -67,6 +73,8 @@ on:
       ARTIFACT_REPOSITORIES_SECRET_4:
         required: false
       ARTIFACT_REPOSITORIES_SECRET_5:
+        required: false
+      D2L_SLACK_TOKEN:
         required: false
 
 env:
@@ -133,6 +141,14 @@ jobs:
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
+
+    - if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true' && inputs.slack_channel != '' }}
+      name: Send Slack notification
+      uses: Brightspace/terraform-workflows/actions/plan/slack@cbao/slack
+      with:
+        slack_channel: ${{ inputs.slack_channel }}
+        slack_token: ${{ secrets.D2L_SLACK_TOKEN }}
+        environment: ${{ matrix.environment }}
 
     # Matrixed jobs overwrite eachother's outputs if they use the same name.
     # Unfortunately though, job outputs need to be statically defined in the yml
@@ -248,3 +264,11 @@ jobs:
             "environment": "${{ matrix.environment }}",
             "workspace_path": "${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}"
           }
+
+    - if: ${{ !cancelled() && inputs.slack_channel != '' }}
+      name: Send Slack notification
+      uses: Brightspace/terraform-workflows/actions/apply/slack@cbao/slack
+      with:
+        slack_channel: ${{ inputs.slack_channel }}
+        slack_token: ${{ secrets.D2L_SLACK_TOKEN }}
+        environment: ${{ matrix.environment }}
