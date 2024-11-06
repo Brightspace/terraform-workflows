@@ -143,6 +143,7 @@ jobs:
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
 
     - if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true' && inputs.slack_channel != '' }}
+      continue-on-error: true
       name: Send Slack notification
       uses: Brightspace/terraform-workflows/actions/plan/slack@v4
       with:
