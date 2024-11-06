@@ -144,7 +144,7 @@ jobs:
 
     - if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true' && inputs.slack_channel != '' }}
       name: Send Slack notification
-      uses: Brightspace/terraform-workflows/actions/plan/slack@cbao/slack
+      uses: Brightspace/terraform-workflows/actions/plan/slack@v4
       with:
         slack_channel: ${{ inputs.slack_channel }}
         slack_token: ${{ secrets.D2L_SLACK_TOKEN }}
@@ -267,7 +267,7 @@ jobs:
 
     - if: ${{ !cancelled() && inputs.slack_channel != '' }}
       name: Send Slack notification
-      uses: Brightspace/terraform-workflows/actions/apply/slack@cbao/slack
+      uses: Brightspace/terraform-workflows/actions/apply/slack@v4
       with:
         slack_channel: ${{ inputs.slack_channel }}
         slack_token: ${{ secrets.D2L_SLACK_TOKEN }}
