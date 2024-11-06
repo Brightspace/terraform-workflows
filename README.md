@@ -178,6 +178,13 @@ Defaults to `true`.
 **Required**.
 The version of terraform to install and use (e.g. `1.2.1`).
 
+---
+
+##### `slack_channel` (`string`)
+
+**Optional**.
+If specified, sends notifications to the Slack channel at the end of Terraform Plan and Apply jobs.
+
 ## Terraform Format
 
 This is used to ensure formatting on PRs. It is not included in the standard workflow.
