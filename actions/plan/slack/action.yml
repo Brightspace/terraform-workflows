@@ -1,0 +1,21 @@
+name: Slack notification for Terraform Plan
+
+inputs:
+  slack_channel:
+    required: true
+  slack_token:
+    required: true
+  environment:
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Send Slack notification
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        SLACK_CHANNEL: ${{ inputs.slack_channel }}
+        SLACK_TOKEN: ${{ inputs.slack_token }}
+        ENVIRONMENT: ${{ inputs.environment }}
+      shell: bash
+      run: "${GITHUB_ACTION_PATH}/send-plan-notification.sh"
