@@ -15,9 +15,9 @@ AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' <<< "${ASSUMEROLE_RESULT}"
 D2L_EMAIL=$(aws dynamodb query \
 	--region ca-central-1 \
 	--table-name D2LEmployees \
-	--index-name GitHubUserIndex \
-	--key-condition-expression "GitHubUser = :name" \
-	--expression-attribute-values "{\":name\": {\"S\": \"${GITHUB_ACTOR}\"}}" \
+	--index-name GitHubUserIdIndex \
+	--key-condition-expression "GitHubUserId = :u" \
+	--expression-attribute-values "{\":u\": {\"N\": \"${GITHUB_ACTOR_ID}\"}}" \
 	--query 'Items[].D2LEmail.S' \
 	--output text)
 
