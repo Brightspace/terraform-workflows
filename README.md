@@ -184,6 +184,7 @@ The version of terraform to install and use (e.g. `1.2.1`).
 
 **Optional**.
 If specified, sends notifications to the Slack channel at the end of Terraform Plan and Apply jobs.
+You must also add the [GitHub Actions](https://d2l.slack.com/apps/A04BR0NCZAS-github-actions) Slack app to the channel's integrations.
 
 ## Terraform Format
 
