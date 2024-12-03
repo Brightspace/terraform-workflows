@@ -72,7 +72,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-      issues: write
+      pull-requests: write
 
     environment: ${{ github.event_name != 'pull_request' && matrix.environment || null }}
     # Workflows against a branch run one-at-a-time, workflows against a PR are non-blocking
