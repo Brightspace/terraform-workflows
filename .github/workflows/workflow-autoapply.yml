@@ -52,12 +52,6 @@ on:
         value: ${{ toJson(jobs.plan_apply.outputs.*) != '[]' }}
 
     secrets:
-      AWS_ACCESS_KEY_ID:
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        required: true
-      AWS_SESSION_TOKEN:
-        required: true
       ARTIFACT_REPOSITORIES_SECRET_1:
         required: false
       ARTIFACT_REPOSITORIES_SECRET_2:
@@ -69,16 +63,16 @@ on:
       ARTIFACT_REPOSITORIES_SECRET_5:
         required: false
 
-env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-
 jobs:
   plan_apply:
     name: Plan and Apply
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: 60
+
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
 
     environment: ${{ github.event_name != 'pull_request' && matrix.environment || null }}
     # Workflows against a branch run one-at-a-time, workflows against a PR are non-blocking
@@ -127,6 +121,20 @@ jobs:
         ARTIFACT_REPOSITORIES_SECRET_3: ${{ secrets.ARTIFACT_REPOSITORIES_SECRET_3 }}
         ARTIFACT_REPOSITORIES_SECRET_4: ${{ secrets.ARTIFACT_REPOSITORIES_SECRET_4 }}
         ARTIFACT_REPOSITORIES_SECRET_5: ${{ secrets.ARTIFACT_REPOSITORIES_SECRET_5 }}
+
+    - if: ${{ github.event_name == 'pull_request' }}
+      name: Assume Hub Role (PR)
+      uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
+      with:
+        role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+repo
+        aws-region: us-east-1
+
+    - if: ${{ github.event_name != 'pull_request' }}
+      name: Assume Hub Role
+      uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
+      with:
+        role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+tfapply
+        aws-region: us-east-1
 
     - id: plan
       uses: Brightspace/terraform-workflows/actions/plan@v4
