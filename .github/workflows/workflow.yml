@@ -128,7 +128,8 @@ jobs:
         ARTIFACT_REPOSITORIES_SECRET_4: ${{ secrets.ARTIFACT_REPOSITORIES_SECRET_4 }}
         ARTIFACT_REPOSITORIES_SECRET_5: ${{ secrets.ARTIFACT_REPOSITORIES_SECRET_5 }}
 
-    - uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
+    - name: Assume Hub Role
+      uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+repo
         aws-region: us-east-1
@@ -260,7 +261,8 @@ jobs:
 
     - uses: Brightspace/third-party-actions@actions/checkout
 
-    - uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
+    - name: Assume Hub Role
+      uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
       with:
         role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+tfapply
         aws-region: us-east-1
