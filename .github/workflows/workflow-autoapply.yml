@@ -133,7 +133,7 @@ jobs:
       name: Assume Hub Role
       uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
       with:
-        role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+repo
+        role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+tfapply
         aws-region: us-east-1
 
     - id: plan
