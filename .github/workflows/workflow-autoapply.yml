@@ -69,6 +69,11 @@ jobs:
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: 60
 
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+
     environment: ${{ github.event_name != 'pull_request' && matrix.environment || null }}
     # Workflows against a branch run one-at-a-time, workflows against a PR are non-blocking
     concurrency: ${{ matrix.environment }}/${{ github.event_name != 'pull_request' && github.ref || github.run_id }}

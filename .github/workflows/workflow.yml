@@ -77,6 +77,11 @@ jobs:
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: 60
 
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+
     environment: ${{ github.event_name != 'pull_request' && 'preflight' || null }}
 
     strategy:
@@ -231,6 +236,10 @@ jobs:
     needs: plan
 
     if: github.event_name != 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
+
+    permissions:
+      contents: read
+      id-token: write
 
     strategy:
       fail-fast: false
