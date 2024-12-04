@@ -78,6 +78,7 @@ jobs:
     timeout-minutes: 60
 
     permissions:
+      actions: read
       contents: read
       id-token: write
       pull-requests: write
@@ -247,6 +248,7 @@ jobs:
     if: github.event_name != 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
 
     permissions:
+      actions: read
       contents: read
       id-token: write
 
