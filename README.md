@@ -92,7 +92,7 @@ jobs:
           }, {
             "environment": "prod/us-east-1",
             "path": "terraform/environments/prod/us-east-1"
-          ]
+          }]
         }]
 ```
 
