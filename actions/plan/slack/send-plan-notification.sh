@@ -11,10 +11,10 @@ JOB_SUMMARY_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB
 COMMIT_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
 COMMIT_NAME="${GITHUB_REPOSITORY}@${GITHUB_SHA:0:7}"
 
-SLACK_USERNAME=$("${BASH_SOURCE%/*}/get-slack-username.sh")
+SLACK_USER=$("${BASH_SOURCE%/*}/get-slack-user.sh")
 
 TEXT=$(cat <<EOT
-${SLACK_USERNAME} triggered Terraform deployment <${COMMIT_URL}|${COMMIT_NAME}> in ${ENVIRONMENT}.
+${SLACK_USER} triggered Terraform deployment <${COMMIT_URL}|${COMMIT_NAME}> in ${ENVIRONMENT}.
 Please review <${JOB_SUMMARY_URL}|the plan>.
 EOT
 )
