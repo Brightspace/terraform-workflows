@@ -18,12 +18,20 @@ D2L_EMAIL=$(aws dynamodb query \
 	--index-name GitHubUserIdIndex \
 	--key-condition-expression "GitHubUserId = :u" \
 	--expression-attribute-values "{\":u\": {\"N\": \"${GITHUB_ACTOR_ID}\"}}" \
-	--query 'Items[].D2LEmail.S' \
+	--query 'Items[].D2LAltEmail.S' \
 	--output text)
 
 if [ -n "${D2L_EMAIL}" ]; then
+	SLACK_USER_ID="$(curl --request GET \
+		--header "Content-Type: application/json" \
+		--header "Authorization: Bearer ${SLACK_TOKEN}" \
+		"https://slack.com/api/users.lookupByEmail?email=${D2L_EMAIL}" \
+		| jq '.user.id' --raw-output)"
+fi
+
+if [ -n "${SLACK_USER_ID}" ]; then
 	# mention the user in Slack if we can find them
-	echo "<@${D2L_EMAIL%%@*}>"
+	echo "<@${SLACK_USER_ID}>"
 else
 	# fall back to using the GitHub username directly
 	echo "${GITHUB_ACTOR}"
