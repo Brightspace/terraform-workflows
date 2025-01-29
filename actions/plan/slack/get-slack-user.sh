@@ -27,6 +27,8 @@ if [ -n "${D2L_EMAIL}" ]; then
 		--header "Authorization: Bearer ${SLACK_TOKEN}" \
 		"https://slack.com/api/users.lookupByEmail?email=${D2L_EMAIL}" \
 		| jq '.user.id' --raw-output)"
+else
+	SLACK_USER_ID=""
 fi
 
 if [ -n "${SLACK_USER_ID}" ]; then
