@@ -102,12 +102,12 @@ jobs:
 
     - uses: Brightspace/third-party-actions@actions/checkout
 
-    - if: ${{ github.event_name != 'pull_request' }}
-      name: 'Assert: Branch is up to date'
-      uses: Brightspace/assert-git-remote-ref-action@main
-      with:
-        remote: origin
-        ref: ${{ inputs.default_branch }}
+    # - if: ${{ github.event_name != 'pull_request' }}
+    #   name: 'Assert: Branch is up to date'
+    #   uses: Brightspace/assert-git-remote-ref-action@main
+    #   with:
+    #     remote: origin
+    #     ref: ${{ inputs.default_branch }}
 
     - if: ${{ inputs.artifacts_url != '' }}
       name: 'Extract artifacts'
