@@ -21,14 +21,17 @@ if [ "${HAS_CHANGES}" == "false" ]; then
 	exit 0
 fi
 
+TRUNCATED_WARNING=''
 PLAN_TEXT=$(terraform show "${ARTIFACTS_DIR}/terraform.plan" -no-color | sed --silent '/Terraform will perform the following actions/,$p')
 if [ "${PLAN_TEXT:0:60000}" != "${PLAN_TEXT}" ]; then
 	NEWLINE=$'\n'
-	PLAN_TEXT="${PLAN_TEXT:0:60000}${NEWLINE}${NEWLINE}-- Plan is truncated.  See build log for full plan. --"
+	PLAN_TEXT="${PLAN_TEXT:0:60000}"
+ 	TRUNCATED_WARNING=":rotating_light: Plan is truncated. See build log for full plan. :rotating_light:"
 fi
 
 GITHUB_COMMENT_TEXT=$(mktemp)
 cat << EOF > "${GITHUB_COMMENT_TEXT}"
+${TRUNCATED_WARNING}
 <details>
 <summary>
 <b>${ENVIRONMENT} terraform plan</b> (${GITHUB_SHA})
