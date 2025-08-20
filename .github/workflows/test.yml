@@ -76,7 +76,7 @@ jobs:
           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
-          role-to-assume: arn:aws:iam::216665870245:role/terraform/tfp+github+${{github.repository_owner}}+${{github.event.repository.name}}
+          role-to-assume: arn:aws:iam::${{inputs.account_id}}:role/terraform/tfp+github+${{github.repository_owner}}+${{github.event.repository.name}}
           role-duration-seconds: 900
           aws-region: ca-central-1
 
