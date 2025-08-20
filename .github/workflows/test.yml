@@ -1,0 +1,89 @@
+name: Terraform Test
+
+on:
+  workflow_call:
+    inputs:
+      account_id:
+        description: Account id
+        required: true
+        type: string
+
+      terraform_version:
+        description: Which version of terraform to use
+        type: string
+        required: true
+
+      modules_root:
+        description: Root path that terraform modules (folders) are in
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  generate-matrix:
+    name: Find Modules
+    runs-on: [self-hosted, Linux, AWS]
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: Brightspace/third-party-actions@actions/checkout
+        with:
+          sparse-checkout: ${{inputs.modules_root}}
+
+      - name: Find testable folders
+        id: set-matrix
+        working-directory: ${{inputs.modules_root}}
+        run: |
+          # Find all folders with at least one .tf file
+          tf_dirs=$(find . -type f -name '*.tf' -exec dirname {} \; | sort -u)
+          result=()
+          for dir in $tf_dirs; do
+            # Check for tests folder with at least one *.tftest.hcl file
+            if [ -d "$dir/tests" ] && find "$dir/tests" -type f -name '*.tftest.hcl' | grep -q .; then
+              # Remove leading ./ for cleaner output
+              clean_dir="${dir#./}"
+              result+=("\"$clean_dir\"")
+            fi
+          done
+          IFS=, matrix_json="{\"folder\":[${result[*]}]}"
+          echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
+
+  test:
+    name: ${{matrix.folder}}
+    needs: generate-matrix
+    runs-on: [self-hosted, Linux, AWS]
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
+
+    steps:
+      - name: Setup Terraform
+        uses: Brightspace/third-party-actions@hashicorp/setup-terraform
+        with:
+          terraform_version: ${{inputs.terraform_version}}
+
+      - uses: Brightspace/third-party-actions@actions/checkout
+        with:
+          sparse-checkout: ${{inputs.modules_root}}
+
+      - name: Assume role
+        uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
+        with:
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
+          role-to-assume: arn:aws:iam::216665870245:role/terraform/tfp+github+${{github.repository_owner}}+${{github.event.repository.name}}
+          role-duration-seconds: 900
+          aws-region: ca-central-1
+
+      - name: Init
+        run: terraform init
+        working-directory: ${{inputs.modules_root}}/${{matrix.folder}}
+
+      - name: Test Module
+        run: terraform test
+        working-directory: ${{inputs.modules_root}}/${{matrix.folder}}
