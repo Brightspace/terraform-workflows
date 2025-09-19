@@ -17,7 +17,8 @@ D2L_EMAIL=$(aws dynamodb query \
 	--table-name D2LEmployees \
 	--index-name GitHubUserIdIndex \
 	--key-condition-expression "GitHubUserId = :u" \
-	--expression-attribute-values "{\":u\": {\"N\": \"${GITHUB_ACTOR_ID}\"}}" \
+	--filter-expression 'D2LState = :active AND GitHubState = :confirmed' \
+	--expression-attribute-values "{\":u\": {\"N\": \"${GITHUB_ACTOR_ID}\"}, \":active\": {\"S\": \"ACTIVE\"}, \":confirmed\": {\"S\": \"CONFIRMED\"}}" \
 	--query 'Items[].D2LAltEmail.S' \
 	--output text)
 
