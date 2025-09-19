@@ -10,6 +10,14 @@ onexit() {
 	rm "${GITHUB_STEP_SUMMARY_PLAN_OUTPUT}" 2> /dev/null || true
 }
 
+# This is a very crude check. Ideally we would check that the lock file contains all providers used in the configuration.
+# `terraform init -lockfile=readonly` almost does what we want, but it doesn't work when the lock file is created on Windows
+# and then used in GitHub Actions on Linux, because the file contains OS-specific checksums.
+if [ "${REQUIRE_LOCKFILE}" == "true" ] && [ ! -f .terraform.lock.hcl ]; then
+	echo '::error ::.terraform.lock.hcl file is required but not present. Please run "terraform init -backend=false" and commit the lock file.'
+	exit 1
+fi
+
 REFRESH=""
 if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
 	ROLE_KIND="r"
