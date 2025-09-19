@@ -33,6 +33,12 @@ on:
         default: 60
         type: number
 
+      require_lockfile:
+        description: Fail the workflow if the .terraform.lock.hcl file is not present in the workspace
+        required: false
+        type: boolean
+        default: false
+
       artifacts_url:
         description: Download an archive from the specified url and extract it under .artifacts in the root of the workspace
         required: false
@@ -150,6 +156,7 @@ jobs:
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
+        require_lockfile: ${{ inputs.require_lockfile }}
 
     - if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true' && inputs.slack_channel != '' }}
       continue-on-error: true
