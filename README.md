@@ -183,7 +183,7 @@ The version of terraform to install and use (e.g. `1.2.1`).
 ##### `require_lockfile` (`boolean`)
 
 **Optional**
-Whether the Terraform [lock file](https://developer.hashicorp.com/terraform/language/files/dependency-lock) .terraform.lock.hcl must be present in all workspaces.
+Whether the Terraform [lock file](https://developer.hashicorp.com/terraform/language/files/dependency-lock) .terraform.lock.hcl must declare all providers in the workspace.
 Defaults to `false`.
 
 ---

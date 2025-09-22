@@ -33,6 +33,12 @@ on:
         default: 60
         type: number
 
+      require_lockfile:
+        description: Fail the workflow if the .terraform.lock.hcl file doesn't declare all providers in the workspace
+        required: false
+        type: boolean
+        default: false
+
       artifacts_url:
         description: Download an archive from the specified url and extract it under .artifacts in the root of the workspace
         required: false
@@ -143,6 +149,7 @@ jobs:
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
+        require_lockfile: ${{ inputs.require_lockfile }}
         skip_archive: true
 
     # Matrixed jobs overwrite eachother's outputs if they use the same name.

@@ -27,7 +27,7 @@ inputs:
     required: true
 
   require_lockfile:
-    description: Fail the action if the .terraform.lock.hcl file is not present in the workspace
+    description: Fail the action if the .terraform.lock.hcl file doesn't declare all providers in the workspace
     default: false
 
 outputs:
