@@ -26,6 +26,10 @@ inputs:
     description: Which version of terraform to use
     required: true
 
+  require_lockfile:
+    description: Fail the action if the .terraform.lock.hcl file doesn't declare all providers in the workspace
+    default: false
+
 outputs:
   plan_path:
     description: Path to plan file
@@ -63,6 +67,7 @@ runs:
         PROVIDER_ROLE_ARN: ${{ fromJson(inputs.config).provider_role_arn }}
         PROVIDER_ROLE_TFVAR: ${{ fromJson(inputs.config).provider_role_tfvar }}
         REFRESH_ON_PR: ${{ inputs.refresh_on_pr }}
+        REQUIRE_LOCKFILE: ${{ inputs.require_lockfile }}
 
     - run: ${{ github.action_path }}/details.sh
       shell: bash

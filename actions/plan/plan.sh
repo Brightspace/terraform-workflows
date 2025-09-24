@@ -47,6 +47,16 @@ echo "##[group]terraform init"
 terraform init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
 
+if [ "${REQUIRE_LOCKFILE}" == "true" ]; then
+	git add --intent-to-add .terraform.lock.hcl
+	LOCKFILE_DIFF=$(git diff -- .terraform.lock.hcl)
+	if echo "${LOCKFILE_DIFF}" | grep --quiet --extended-regexp '^[+-]\s*provider\s+"'; then
+		echo '::error ::Changes detected in provider declarations in .terraform.lock.hcl. Please review and commit the lock file changes.'
+		echo "${LOCKFILE_DIFF}"
+		exit 1
+	fi
+fi
+
 set +e
 echo "##[group]terraform plan"
 terraform plan \
