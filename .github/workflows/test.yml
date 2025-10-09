@@ -18,17 +18,6 @@ on:
         type: string
         required: true
 
-    secrets:
-      AWS_ACCESS_KEY_ID:
-        description: AWS Access Key ID
-        required: true
-      AWS_SECRET_ACCESS_KEY:
-        description: AWS Secret Access Key
-        required: true
-      AWS_SESSION_TOKEN:
-        description: AWS Session Token
-        required: true
-
 permissions:
   contents: read
 
@@ -67,6 +56,11 @@ jobs:
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: 10
 
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.generate-matrix.outputs.matrix) }}
@@ -81,12 +75,16 @@ jobs:
         with:
           sparse-checkout: ${{inputs.modules_root}}
 
+      - name: Assume Hub Role
+        uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
+        with:
+          role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+repo
+          aws-region: ca-central-1
+
       - name: Assume role
         uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
         with:
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
+          role-chaining: true
           role-to-assume: arn:aws:iam::${{inputs.account_id}}:role/terraform/tfp+github+${{github.repository_owner}}+${{github.event.repository.name}}
           role-duration-seconds: 900
           aws-region: ca-central-1
