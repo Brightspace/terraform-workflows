@@ -15,7 +15,7 @@ runs:
         terraform_version: ${{ fromJson(inputs.config).terraform_version }}
         terraform_wrapper: false
 
-    - uses: Brightspace/terraform-workflows/actions/assert-terraform-version@omsmith/nopreflight
+    - uses: Brightspace/terraform-workflows/actions/assert-terraform-version@v5
 
     - id: download
       run: ${{ github.action_path }}/download.sh

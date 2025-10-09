@@ -96,7 +96,7 @@ jobs:
 
     steps:
     - id: parse
-      uses: Brightspace/terraform-workflows/actions/parse-config@v4
+      uses: Brightspace/terraform-workflows/actions/parse-config@v5
       with:
         # GHA's fromJson() supports comments in JSON strings which is nice from
         # an end-user perspective (e.g. naming account ids). toJson(fromJson())
@@ -122,7 +122,7 @@ jobs:
 
     - if: ${{ inputs.artifact_repositories != '' }}
       name: Download artifact repositories
-      uses: Brightspace/terraform-workflows/actions/plan/artifact-repositories@v4
+      uses: Brightspace/terraform-workflows/actions/plan/artifact-repositories@v5
       with:
         artifacts_dir: ${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}/.artifacts
         config: ${{ inputs.artifact_repositories }}
@@ -140,7 +140,7 @@ jobs:
         aws-region: us-east-1
 
     - id: plan
-      uses: Brightspace/terraform-workflows/actions/plan@omsmith/nopreflight
+      uses: Brightspace/terraform-workflows/actions/plan@v5
       with:
         comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
@@ -151,7 +151,7 @@ jobs:
     - if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true' && inputs.slack_channel != '' }}
       continue-on-error: true
       name: Send Slack notification
-      uses: Brightspace/terraform-workflows/actions/plan/slack@v4
+      uses: Brightspace/terraform-workflows/actions/plan/slack@v5
       with:
         slack_channel: ${{ inputs.slack_channel }}
         slack_token: ${{ secrets.D2L_SLACK_TOKEN }}
@@ -259,7 +259,7 @@ jobs:
 
     steps:
     - id: parse
-      uses: Brightspace/terraform-workflows/actions/parse-config@v4
+      uses: Brightspace/terraform-workflows/actions/parse-config@v5
       with:
         # GHA's fromJson() supports comments in JSON strings which is nice from
         # an end-user perspective (e.g. naming account ids). toJson(fromJson())
@@ -274,7 +274,7 @@ jobs:
         role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+tfapply
         aws-region: us-east-1
 
-    - uses: Brightspace/terraform-workflows/actions/apply@v4
+    - uses: Brightspace/terraform-workflows/actions/apply@v5
       with:
         config: |
           {
@@ -285,7 +285,7 @@ jobs:
 
     - if: ${{ !cancelled() && inputs.slack_channel != '' }}
       name: Send Slack notification
-      uses: Brightspace/terraform-workflows/actions/apply/slack@v4
+      uses: Brightspace/terraform-workflows/actions/apply/slack@v5
       with:
         slack_channel: ${{ inputs.slack_channel }}
         slack_token: ${{ secrets.D2L_SLACK_TOKEN }}

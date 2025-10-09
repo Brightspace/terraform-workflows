@@ -35,7 +35,7 @@ runs:
         terraform_version: ${{ inputs.terraform_version }}
         terraform_wrapper: false
 
-    - uses: Brightspace/terraform-workflows/actions/assert-terraform-version@omsmith/nopreflight
+    - uses: Brightspace/terraform-workflows/actions/assert-terraform-version@v5
 
     - working-directory: ${{ inputs.workspace_path }}
       run: ${{ github.action_path }}/init.sh

@@ -23,7 +23,7 @@ jobs:
         with:
           terraform_version: ${{ inputs.terraform_version }}
           terraform_wrapper: false
-      - uses: Brightspace/terraform-workflows/actions/assert-terraform-version@omsmith/nopreflight
+      - uses: Brightspace/terraform-workflows/actions/assert-terraform-version@v5
       - uses: Brightspace/third-party-actions@actions/checkout
         with:
           ref: ${{ github.head_ref || github.ref }}
