@@ -30,3 +30,5 @@ runs:
         PLAN_PATH: ${{ steps.download.outputs.artifacts_dir }}/terraform.plan
         PLAN_ARTIFACTS: ${{ steps.download.outputs.artifacts_dir }}
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        PROVIDER_ROLE_ARN: ${{ fromJson(inputs.config).provider_role_arn_rw }}
+        PROVIDER_ROLE_TFVAR: ${{ fromJson(inputs.config).provider_role_tfvar }}

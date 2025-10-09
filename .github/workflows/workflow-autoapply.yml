@@ -147,6 +147,7 @@ jobs:
       with:
         comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
+        use_rw_role: ${{ github.event_name != 'pull_request' && "true" || "false" }}
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
         require_lockfile: ${{ inputs.require_lockfile }}

@@ -27,6 +27,7 @@ terraform {
 ```tf
 variable "terraform_role_arn" {
   type = string
+  ephemeral = true
 }
 
 provider "aws" {

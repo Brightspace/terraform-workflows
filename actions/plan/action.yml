@@ -30,6 +30,10 @@ inputs:
     description: Fail the action if the .terraform.lock.hcl file doesn't declare all providers in the workspace
     default: false
 
+  use_rw_role:
+    description: Use the read-write "apply-time" role instead of the read-only "plan-time" role
+    default: false
+
 outputs:
   plan_path:
     description: Path to plan file
@@ -66,7 +70,7 @@ runs:
       env:
         ARTIFACTS_DIR: ${{ steps.setup.outputs.artifacts_dir }}
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
-        PROVIDER_ROLE_ARN: ${{ fromJson(inputs.config).provider_role_arn }}
+        PROVIDER_ROLE_ARN: ${{ inputs.use_rw_role != "true" && fromJson(inputs.config).provider_role_arn_rw || fromJson(inputs.config).provider_role_arn_ro }}
         PROVIDER_ROLE_TFVAR: ${{ fromJson(inputs.config).provider_role_tfvar }}
         REFRESH_ON_PR: ${{ inputs.refresh_on_pr }}
         REQUIRE_LOCKFILE: ${{ inputs.require_lockfile }}

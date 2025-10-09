@@ -34,4 +34,7 @@ terraform init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
 
 terraform show "${PLAN_PATH}"
-terraform apply -input=false "${PLAN_PATH}"
+terraform apply \
+	-input=false \
+	-var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" \
+	"${PLAN_PATH}"
