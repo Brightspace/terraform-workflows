@@ -1,0 +1,14 @@
+name: 'Assert Terraform Version'
+
+runs:
+  using: composite
+  steps:
+
+    - shell: bash
+      run: |
+        MAJOR_VERSION=$(terraform version | grep -oP 'Terraform v\K\d+')
+        MINOR_VERSION=$(terraform version | grep -oP 'Terraform v\d+\.\K\d+')
+        if (( "${MAJOR_VERSION}" * 1000 + "${MINOR_VERSION}" < 1010 )); then
+          echo "Must use terraform version 1.10+"
+          exit 1
+        fi

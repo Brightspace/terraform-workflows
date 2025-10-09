@@ -71,6 +71,8 @@ jobs:
         with:
           terraform_version: ${{inputs.terraform_version}}
 
+      - uses: Brightspace/terraform-workflows/actions/assert-terraform-version@omsmith/nopreflight
+
       - uses: Brightspace/third-party-actions@actions/checkout
         with:
           sparse-checkout: ${{inputs.modules_root}}
