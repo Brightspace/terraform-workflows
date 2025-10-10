@@ -19,7 +19,7 @@ shopt -u globstar
 
 ASSUMEROLE_RESULT=$(aws \
 	sts assume-role \
-	--role-arn "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+m" \
+	--role-arn "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+r" \
 	--role-session-name "githubaction-sha-${GITHUB_SHA}" \
 )
 
