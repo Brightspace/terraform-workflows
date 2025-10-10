@@ -184,21 +184,6 @@ jobs:
       working-directory: ${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}
       shell: bash
       run: |
-        BACKEND_CONFIG=$(mktemp)
-        cat > "${BACKEND_CONFIG}" << EOF
-        region         = "us-east-1"
-        bucket         = "d2l-terraform-state"
-        dynamodb_table = "d2l-terraform-state"
-        key            = "github/${GITHUB_REPOSITORY}/${ENVIRONMENT}.tfstate"
-        assume_role = {
-          role_arn = "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+m"
-        }
-        EOF
-
-        echo "##[group]terraform init"
-        terraform init -input=false -reconfigure -backend-config="${BACKEND_CONFIG}"
-        echo "##[endgroup]"
-
         terraform apply -input=false "${PLAN_PATH}"
       env:
         ENVIRONMENT: ${{ matrix.environment }}
