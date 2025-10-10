@@ -91,7 +91,7 @@ jobs:
 
     steps:
     - id: parse
-      uses: Brightspace/terraform-workflows/actions/parse-config@v4
+      uses: Brightspace/terraform-workflows/actions/parse-config@v5
       with:
         # GHA's fromJson() supports comments in JSON strings which is nice from
         # an end-user perspective (e.g. naming account ids). toJson(fromJson())
@@ -117,7 +117,7 @@ jobs:
 
     - if: ${{ inputs.artifact_repositories != '' }}
       name: Download artifact repositories
-      uses: Brightspace/terraform-workflows/actions/plan/artifact-repositories@v4
+      uses: Brightspace/terraform-workflows/actions/plan/artifact-repositories@v5
       with:
         artifacts_dir: ${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}/.artifacts
         config: ${{ inputs.artifact_repositories }}
@@ -143,10 +143,11 @@ jobs:
         aws-region: us-east-1
 
     - id: plan
-      uses: Brightspace/terraform-workflows/actions/plan@v4
+      uses: Brightspace/terraform-workflows/actions/plan@v5
       with:
         comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
+        use_rw_role: ${{ github.event_name != 'pull_request' && 'true' || 'false' }}
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
         require_lockfile: ${{ inputs.require_lockfile }}

@@ -15,6 +15,8 @@ runs:
         terraform_version: ${{ fromJson(inputs.config).terraform_version }}
         terraform_wrapper: false
 
+    - uses: Brightspace/terraform-workflows/actions/assert-terraform-version@v5
+
     - id: download
       run: ${{ github.action_path }}/download.sh
       shell: bash
@@ -28,3 +30,5 @@ runs:
         PLAN_PATH: ${{ steps.download.outputs.artifacts_dir }}/terraform.plan
         PLAN_ARTIFACTS: ${{ steps.download.outputs.artifacts_dir }}
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        PROVIDER_ROLE_ARN: ${{ fromJson(inputs.config).provider_role_arn_rw }}
+        PROVIDER_ROLE_TFVAR: ${{ fromJson(inputs.config).provider_role_tfvar }}

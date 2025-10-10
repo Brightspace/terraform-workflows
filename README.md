@@ -26,7 +26,8 @@ terraform {
 
 ```tf
 variable "terraform_role_arn" {
-  type = string
+  type      = string
+  ephemeral = true
 }
 
 provider "aws" {
@@ -71,10 +72,10 @@ on:
 jobs:
 
   terraform:
-    uses: Brightspace/terraform-workflows/.github/workflows/workflow.yml@v4
+    uses: Brightspace/terraform-workflows/.github/workflows/workflow.yml@v5
     secrets: inherit
     with:
-      terraform_version: 1.2.1
+      terraform_version: 1.13.3
       config: |
         [{
           // Dev-Project Account
@@ -176,7 +177,8 @@ Defaults to `true`.
 ##### `terraform_version` (`string`)
 
 **Required**.
-The version of terraform to install and use (e.g. `1.2.1`).
+The version of terraform to install and use (e.g. `1.13.3`).
+Requires version `1.10` or newer.
 
 ---
 
@@ -212,9 +214,9 @@ on:
       - '.github/workflows/terraform-format.yml'
 jobs:
   call-workflow:
-    uses: Brightspace/terraform-workflows/.github/workflows/format.yml@v4
+    uses: Brightspace/terraform-workflows/.github/workflows/format.yml@v5
     with:
-      terraform_version: 0.14.4
+      terraform_version: 1.13.3
       base_path: '.'
 
 
@@ -224,33 +226,55 @@ jobs:
 ##### `terraform_version` (`string`)
 
 **Required**.
-The version of terraform to install and use (e.g. `1.2.1`).
+The version of terraform to install and use (e.g. `1.13.3`).
+Requires version `1.10` or newer.
 
 ##### `base_path` (`string`)
 
 **Required**.
 The path from which terraform fmt will run (e.g. `terraform` or `.`)
 
+## Migrating from v4
 
-## Migrating from v2
+If migrating from v4 of terraform-workflows you should:
 
-If migrating from v2 of terraform-workflows, then when possible v3's [reusable-workflow](#add-your-workflow) should be preferred.
-For builds that are not yet terraform-only and need additional customization the individual actions are still available; however,
-referencing these actions has changed:
+### Update to terraform 1.10+
 
 ```diff
-- uses: Brightspace/terraform-workflows@configure/v2
-+ uses: Brightspace/terraform-workflows/actions/configure@v4
+   terraform:
+     uses: Brightspace/terraform-workflows/.github/workflows/workflow.yml@v5
+     secrets: inherit
+     with:
+-       terraform_version: 1.8.3
++       terraform_version: 1.13.3
+```
 
-- uses: Brightspace/terraform-workflows/finish@configure/v2
-+ uses: Brightspace/terraform-workflows/actions/configure/finish@v4
+### Update `terraform_role_arn` to be `ephemeral`
 
-- uses: Brightspace/terraform-workflows@plan/v2
-+ uses: Brightspace/terraform-workflows/actions/plan@v4
+```diff
+ variable "terraform_role_arn" {
+   type      = string
++  ephemeral = true
+ }
+```
 
-- uses: Brightspace/terraform-workflows@collect/v2
-+ uses: Brightspace/terraform-workflows/actions/collect@v4
+### Update to v5 in `repo-settings` and remove `preflight`
 
-- uses: Brightspace/terraform-workflows@apply/v2
-+ uses: Brightspace/terraform-workflows/actions/apply@v4
+```diff
+ terraform:
+-  workflows_version: 4
++  workflows_version: 5
+   aws_account_ids:
+```
+
+```diff
+ environments:
+-  preflight:
+-    settings:
+-      branch_patterns:
+-        - main
+   dev/us-east-1:
+     settings:
+       branch_patterns:
+         - main
 ```
