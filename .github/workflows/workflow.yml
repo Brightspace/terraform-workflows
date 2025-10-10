@@ -280,7 +280,9 @@ jobs:
           {
             "terraform_version": "${{ inputs.terraform_version }}",
             "environment": "${{ matrix.environment }}",
-            "workspace_path": "${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}"
+            "workspace_path": "${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}",
+            "provider_role_arn_rw": "${{ fromJson(steps.parse.outputs.config)[matrix.environment].provider_role_arn_rw }}",
+            "provider_role_tfvar": "${{ fromJson(steps.parse.outputs.config)[matrix.environment].provider_role_tfvar }}"
           }
 
     - if: ${{ !cancelled() && inputs.slack_channel != '' }}
