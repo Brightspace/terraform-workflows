@@ -24,7 +24,7 @@ bucket         = "d2l-terraform-state"
 dynamodb_table = "d2l-terraform-state"
 key            = "github/${GITHUB_REPOSITORY}/${ENVIRONMENT}.tfstate"
 assume_role = {
-  role_arn = "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+r"
+  role_arn = "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+${BACKEND_ROLE_KIND}"
 }
 EOF
 
