@@ -18,7 +18,6 @@ D2L_TF_ENVS=$(jq -cr \
 )
 D2L_TF_CONFIG=$(jq -cr \
 	--argjson envconfig "${ENVCONFIG}" \
-	--arg role_arn "${ROLE_ARN}" \
 	'.[$envconfig.environment] = $envconfig' \
 	<<< "${D2L_TF_CONFIG}"
 )
