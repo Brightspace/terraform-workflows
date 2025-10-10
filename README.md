@@ -26,7 +26,7 @@ terraform {
 
 ```tf
 variable "terraform_role_arn" {
-  type = string
+  type      = string
   ephemeral = true
 }
 
@@ -234,3 +234,47 @@ Requires version `1.10` or newer.
 **Required**.
 The path from which terraform fmt will run (e.g. `terraform` or `.`)
 
+## Migrating from v4
+
+If migrating from v4 of terraform-workflows you should:
+
+### Update to terraform 1.10+
+
+```diff
+   terraform:
+     uses: Brightspace/terraform-workflows/.github/workflows/workflow.yml@v5
+     secrets: inherit
+     with:
+-       terraform_version: 1.8.3
++       terraform_version: 1.13.3
+```
+
+### Update `terraform_role_arn` to be `ephemeral`
+
+```diff
+ variable "terraform_role_arn" {
+   type      = string
++  ephemeral = true
+ }
+```
+
+### Update to v5 in `repo-settings` and remove `preflight`
+
+```diff
+ terraform:
+-  workflows_version: 4
++  workflows_version: 5
+   aws_account_ids:
+```
+
+```diff
+ environments:
+-  preflight:
+-    settings:
+-      branch_patterns:
+-        - main
+   dev/us-east-1:
+     settings:
+       branch_patterns:
+         - main
+```
