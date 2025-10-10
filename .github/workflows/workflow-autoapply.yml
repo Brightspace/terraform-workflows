@@ -184,10 +184,14 @@ jobs:
       working-directory: ${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}
       shell: bash
       run: |
-        terraform apply -input=false "${PLAN_PATH}"
+        terraform apply \
+          -var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" \
+          -input=false "${PLAN_PATH}"
       env:
         ENVIRONMENT: ${{ matrix.environment }}
         PLAN_PATH: ${{ steps.plan.outputs.plan_path }}
+        PROVIDER_ROLE_ARN: ${{ fromJson(steps.parse.outputs.config)[matrix.environment].provider_role_arn_rw }}
+        PROVIDER_ROLE_TFVAR: ${{ fromJson(steps.parse.outputs.config)[matrix.environment].provider_role_tfvar }}
 
     outputs:
       changed_env_0: ${{ steps.changed.outputs.changed_env_0 }}
