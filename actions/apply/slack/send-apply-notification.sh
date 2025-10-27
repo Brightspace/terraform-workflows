@@ -22,7 +22,7 @@ SLACK_PAYLOAD="{
 	\"text\": \"${TEXT}\",
 }"
 curl --request POST \
-	--header "Content-Type: application/json" \
+	--header "Content-Type: application/json; charset=utf-8" \
 	--header "Authorization: Bearer ${SLACK_TOKEN}" \
 	--data "${SLACK_PAYLOAD}" \
 	"https://slack.com/api/chat.postMessage"

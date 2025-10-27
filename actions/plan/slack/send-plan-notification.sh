@@ -22,7 +22,7 @@ SLACK_PAYLOAD=$( jq --null-input --arg text "${TEXT}" --arg channel "${SLACK_CHA
 	'{ channel: $channel, username: "Terraform notifier", icon_emoji: ":terraform:", text: $text }'
 )
 curl --request POST \
-	--header "Content-Type: application/json" \
+	--header "Content-Type: application/json; charset=utf-8" \
 	--header "Authorization: Bearer ${SLACK_TOKEN}" \
 	--data "${SLACK_PAYLOAD}" \
 	"https://slack.com/api/chat.postMessage"
