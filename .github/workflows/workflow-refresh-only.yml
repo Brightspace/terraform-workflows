@@ -1,0 +1,77 @@
+name: Terraform
+
+on:
+  workflow_call:
+    inputs:
+      config:
+        description: A JSON (with comments) config string
+        required: true
+        type: string
+
+      default_branch:
+        required: false
+        type: string
+        default: main
+
+      terraform_version:
+        required: true
+        type: string
+
+      apply_timeout:
+        required: false
+        default: 60
+        type: number
+
+jobs:
+
+  refresh-only:
+    name: Refresh Only
+    runs-on: [self-hosted, Linux, AWS]
+    timeout-minutes: ${{ inputs.apply_timeout }}
+
+    if: github.event_name != 'pull_request' && github.ref_name == '${{ inputs.default_branch }}'
+
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJson(inputs.config).*.workspaces.*.environment }}
+
+    environment: ${{ matrix.environment }}
+    concurrency: ${{ matrix.environment }}
+
+    steps:
+    - id: parse
+      uses: Brightspace/terraform-workflows/actions/parse-config@v4
+      with:
+        # GHA's fromJson() supports comments in JSON strings which is nice from
+        # an end-user perspective (e.g. naming account ids). toJson(fromJson())
+        # is used in order to strip these comments out before parsing it ourselves
+        config: ${{ toJson(fromJson(inputs.config)) }}
+
+    - uses: Brightspace/third-party-actions@actions/checkout
+
+    - name: 'Assert: Branch is up to date'
+      uses: Brightspace/assert-git-remote-ref-action@main
+      with:
+        remote: origin
+        ref: ${{ inputs.default_branch }}
+
+    - name: Assume Hub Role
+      uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
+      with:
+        role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+tfapply
+        aws-region: us-east-1
+
+    - uses: Brightspace/terraform-workflows/actions/refresh-only@jashton/refresh-only
+      with:
+        config: |
+          {
+            "terraform_version": "${{ inputs.terraform_version }}",
+            "environment": "${{ matrix.environment }}",
+            "workspace_path": "${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}"
+          }

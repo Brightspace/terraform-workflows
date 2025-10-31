@@ -1,0 +1,22 @@
+name: 'Terraform Refresh Only'
+
+inputs:
+
+  config:
+    description: Environment config object from terraform-workflows/workflow-refresh-only
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+    - uses: Brightspace/third-party-actions@hashicorp/setup-terraform
+      with:
+        terraform_version: ${{ fromJson(inputs.config).terraform_version }}
+        terraform_wrapper: false
+
+    - working-directory: ${{ fromJson(inputs.config).workspace_path }}
+      run: ${{ github.action_path }}/refresh-only.sh
+      shell: bash
+      env:
+        ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
