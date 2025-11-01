@@ -20,4 +20,5 @@ runs:
       shell: bash
       env:
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        PROVIDER_ROLE_ARN: ${{ fromJson(inputs.config).provider_role_arn }}
         PROVIDER_ROLE_TFVAR: ${{ fromJson(inputs.config).provider_role_tfvar }}
