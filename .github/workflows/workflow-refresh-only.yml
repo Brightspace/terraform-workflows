@@ -69,9 +69,5 @@ jobs:
 
     - uses: Brightspace/terraform-workflows/actions/refresh-only@jashton/refresh-only
       with:
-        config: |
-          {
-            "terraform_version": "${{ inputs.terraform_version }}",
-            "environment": "${{ matrix.environment }}",
-            "workspace_path": "${{ fromJson(steps.parse.outputs.config)[matrix.environment].workspace_path }}"
-          }
+        config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.environment]) }}
+        terraform_version: ${{ inputs.terraform_version }}

@@ -5,6 +5,10 @@ inputs:
   config:
     description: Environment config object from terraform-workflows/workflow-refresh-only
     required: true
+  
+  terraform_version:
+    description: Which version of terraform to use
+    required: true
 
 runs:
   using: composite
@@ -12,7 +16,7 @@ runs:
 
     - uses: Brightspace/third-party-actions@hashicorp/setup-terraform
       with:
-        terraform_version: ${{ fromJson(inputs.config).terraform_version }}
+        terraform_version: ${{ inputs.terraform_version }}
         terraform_wrapper: false
 
     - run: ${{ github.action_path }}/refresh-only.sh
@@ -22,3 +26,4 @@ runs:
         ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
         PROVIDER_ROLE_ARN: ${{ fromJson(inputs.config).provider_role_arn }}
         PROVIDER_ROLE_TFVAR: ${{ fromJson(inputs.config).provider_role_tfvar }}
+
