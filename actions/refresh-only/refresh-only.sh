@@ -35,4 +35,7 @@ echo "##[group]terraform init"
 terraform init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
 
-terraform apply --refresh-only -input=false
+terraform apply \
+	-input=false \
+	-refresh-only \
+	-var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}"
