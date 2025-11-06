@@ -36,6 +36,7 @@ terraform init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
 
 terraform apply \
+	-auto-approve \
 	-input=false \
 	-refresh-only \
 	-var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}"
