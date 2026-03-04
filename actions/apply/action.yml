@@ -19,7 +19,7 @@ runs:
       run: ${{ github.action_path }}/download.sh
       shell: bash
       env:
-        ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        WORKSPACE_KEY: ${{ fromJson(inputs.config).key }}
 
     - working-directory: ${{ fromJson(inputs.config).workspace_path }}
       run: ${{ github.action_path }}/apply.sh
@@ -27,4 +27,4 @@ runs:
       env:
         PLAN_PATH: ${{ steps.download.outputs.artifacts_dir }}/terraform.plan
         PLAN_ARTIFACTS: ${{ steps.download.outputs.artifacts_dir }}
-        ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        WORKSPACE_KEY: ${{ fromJson(inputs.config).key }}

@@ -5,7 +5,7 @@ inputs:
     required: true
   slack_token:
     required: true
-  environment:
+  workspace_key:
     required: true
 
 runs:
@@ -16,6 +16,6 @@ runs:
         GITHUB_TOKEN: ${{ github.token }}
         SLACK_CHANNEL: ${{ inputs.slack_channel }}
         SLACK_TOKEN: ${{ inputs.slack_token }}
-        ENVIRONMENT: ${{ inputs.environment }}
+        WORKSPACE_KEY: ${{ inputs.workspace_key }}
       shell: bash
       run: "${GITHUB_ACTION_PATH}/send-plan-notification.sh"

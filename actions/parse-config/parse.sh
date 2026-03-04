@@ -34,11 +34,12 @@ echo "${CONFIG}" \
 			"provider_role_arn_rw": $provider_role_arn_rw,
 			"provider_role_tfvar": $tfvar,
 			"environment": .environment,
+			"key": (.key // .environment),
 			"workspace_path": .path
 		}' \
 	 	- \
-	| xargs -d'\n' -I{} env ENVCONFIG='{}' "${HERE}/configure.sh"
+	| xargs -d'\n' -I{} env WSCONFIG='{}' "${HERE}/configure.sh"
 
 
-echo "environments=$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/envs)" >> "${GITHUB_OUTPUT}"
+echo "workspaces=$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/workspaces)" >> "${GITHUB_OUTPUT}"
 echo "config=$(cat ${D2L_TF_CONFIGURE_TMP_DIR}/config)" >> "${GITHUB_OUTPUT}"

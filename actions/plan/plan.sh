@@ -26,7 +26,7 @@ cat > "${BACKEND_CONFIG}" << EOF
 region         = "us-east-1"
 bucket         = "d2l-terraform-state"
 dynamodb_table = "d2l-terraform-state"
-key            = "github/${GITHUB_REPOSITORY}/${ENVIRONMENT}.tfstate"
+key            = "github/${GITHUB_REPOSITORY}/${WORKSPACE_KEY}.tfstate"
 EOF
 
 MAJOR_VERSION=$(terraform version | grep -oP 'Terraform v\K\d+')

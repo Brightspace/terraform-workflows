@@ -27,8 +27,8 @@ AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' <<< "${ASSUMEROLE_RESULT}")
 AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' <<< "${ASSUMEROLE_RESULT}")
 AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' <<< "${ASSUMEROLE_RESULT}")
 
-ENVIRONMENT_SAFE=$(xxd -p <<< "${ENVIRONMENT}")
-S3_PATH="s3://d2l-terraform-plans/github/${GITHUB_REPOSITORY}/${GITHUB_SHA}/${GITHUB_WORKFLOW}/${GITHUB_RUN_ID}/${ENVIRONMENT_SAFE}.tar.gz"
+WORKSPACE_KEY_SAFE=$(xxd -p <<< "${WORKSPACE_KEY}")
+S3_PATH="s3://d2l-terraform-plans/github/${GITHUB_REPOSITORY}/${GITHUB_SHA}/${GITHUB_WORKFLOW}/${GITHUB_RUN_ID}/${WORKSPACE_KEY_SAFE}.tar.gz"
 
 echo "##[group]upload plan"
 aws s3 cp \
