@@ -139,8 +139,14 @@ An array of `Workspace` objects describing the targetted environments in the acc
 ###### `Workspace.environment` (`string`)
 
 **Required**.
-The name of the environment that describes the targetted resources (e.g. `dev/us-east-1` or `prd-project/ca-central-1`).
+The name of the GitHub environment that describes the targetted resources (e.g. `dev/us-east-1` or `prd-project/ca-central-1`).
 MUST match a configured GitHub environment.
+
+###### `Workspace.key` (`string`)
+
+**Optional**.
+A unique key identifying this workspace, used as the Terraform S3 backend state key and for identifying the workspace in PR comments, artifact paths, and Slack notifications.
+Defaults to the value of `environment`.
 MUST be unique across all accounts and workspaces.
 
 ###### `Workspace.path` (`string`)
@@ -240,17 +246,19 @@ referencing these actions has changed:
 
 ```diff
 - uses: Brightspace/terraform-workflows@configure/v2
-+ uses: Brightspace/terraform-workflows/actions/configure@v4
++ uses: Brightspace/terraform-workflows/actions/configure@v3
 
 - uses: Brightspace/terraform-workflows/finish@configure/v2
-+ uses: Brightspace/terraform-workflows/actions/configure/finish@v4
++ uses: Brightspace/terraform-workflows/actions/configure/finish@v3
 
 - uses: Brightspace/terraform-workflows@plan/v2
-+ uses: Brightspace/terraform-workflows/actions/plan@v4
++ uses: Brightspace/terraform-workflows/actions/plan@v3
 
 - uses: Brightspace/terraform-workflows@collect/v2
-+ uses: Brightspace/terraform-workflows/actions/collect@v4
++ uses: Brightspace/terraform-workflows/actions/collect@v3
 
 - uses: Brightspace/terraform-workflows@apply/v2
-+ uses: Brightspace/terraform-workflows/actions/apply@v4
++ uses: Brightspace/terraform-workflows/actions/apply@v3
 ```
+
+Starting with v4, reusable workflow is the only supported way to use terraform-workflows.

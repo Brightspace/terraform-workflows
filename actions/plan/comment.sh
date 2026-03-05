@@ -34,7 +34,7 @@ cat << EOF > "${GITHUB_COMMENT_TEXT}"
 ${TRUNCATED_WARNING}
 <details>
 <summary>
-<b>${ENVIRONMENT} terraform plan</b> (${GITHUB_SHA})
+<b>${WORKSPACE_KEY} terraform plan</b> (${GITHUB_SHA})
 has changes :yellow_circle:
 </summary>
 

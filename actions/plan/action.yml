@@ -63,7 +63,7 @@ runs:
       shell: bash
       env:
         ARTIFACTS_DIR: ${{ steps.setup.outputs.artifacts_dir }}
-        ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        WORKSPACE_KEY: ${{ fromJson(inputs.config).key }}
         PROVIDER_ROLE_ARN: ${{ fromJson(inputs.config).provider_role_arn }}
         PROVIDER_ROLE_TFVAR: ${{ fromJson(inputs.config).provider_role_tfvar }}
         REFRESH_ON_PR: ${{ inputs.refresh_on_pr }}
@@ -73,7 +73,7 @@ runs:
       shell: bash
       env:
         ARTIFACTS_DIR: ${{ steps.setup.outputs.artifacts_dir }}
-        ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        WORKSPACE_KEY: ${{ fromJson(inputs.config).key }}
         HAS_CHANGES: ${{ steps.plan.outputs.has_changes }}
         WORKSPACE_PATH: ${{ fromJson(inputs.config).workspace_path }}
         TERRAFORM_VERSION_INPUT: ${{ inputs.terraform_version }}
@@ -82,7 +82,7 @@ runs:
       if: ${{ inputs.skip_archive != 'true' }}
       shell: bash
       env:
-        ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        WORKSPACE_KEY: ${{ fromJson(inputs.config).key }}
         PATH_TO_ARCHIVE: ${{ steps.setup.outputs.artifacts_dir }}
 
     - working-directory: ${{ fromJson(inputs.config).workspace_path }}
@@ -92,7 +92,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         COMMENTS_URL: ${{ github.event.pull_request._links.comments.href }}
-        ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        WORKSPACE_KEY: ${{ fromJson(inputs.config).key }}
 
     - working-directory: ${{ fromJson(inputs.config).workspace_path }}
       if: ${{ inputs.comment_plan == 'true' }}
@@ -102,5 +102,5 @@ runs:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         COMMENTS_URL: ${{ github.event.pull_request._links.comments.href }}
         ARTIFACTS_DIR: ${{ steps.setup.outputs.artifacts_dir }}
-        ENVIRONMENT: ${{ fromJson(inputs.config).environment }}
+        WORKSPACE_KEY: ${{ fromJson(inputs.config).key }}
         HAS_CHANGES: ${{ steps.plan.outputs.has_changes }}

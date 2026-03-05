@@ -5,7 +5,7 @@ set -euo pipefail
 JOBS=$( curl --header "Authorization: token ${GITHUB_TOKEN}" \
 	"${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs"
 )
-JOB_NAME_SUFFIX="Plan (${ENVIRONMENT})"
+JOB_NAME_SUFFIX="Plan (${WORKSPACE_KEY})"
 JOB_ID=$( echo "${JOBS}" | jq --raw-output ".jobs[] | select( .name | endswith(\"${JOB_NAME_SUFFIX}\") ) | .id" )
 JOB_SUMMARY_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}#summary-${JOB_ID}"
 COMMIT_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
@@ -14,7 +14,7 @@ COMMIT_NAME="${GITHUB_REPOSITORY}@${GITHUB_SHA:0:7}"
 SLACK_USER=$("${BASH_SOURCE%/*}/get-slack-user.sh")
 
 TEXT=$(cat <<EOT
-${SLACK_USER} triggered Terraform deployment <${COMMIT_URL}|${COMMIT_NAME}> in ${ENVIRONMENT}.
+${SLACK_USER} triggered Terraform deployment <${COMMIT_URL}|${COMMIT_NAME}> in workspace ${WORKSPACE_KEY}.
 Please review <${JOB_SUMMARY_URL}|the plan>.
 EOT
 )

@@ -6,6 +6,10 @@ inputs:
     description: Name of the deployment / environment
     required: true
 
+  key:
+    description: Unique workspace key used for the Terraform backend state key. Defaults to environment.
+    required: false
+
   workspace_path:
     description: Path to the terraform workspace
     required: true
@@ -39,7 +43,7 @@ runs:
       run: ${{ github.action_path }}/init.sh
       shell: bash
       env:
-        ENVIRONMENT: ${{ inputs.environment }}
+        WORKSPACE_KEY: ${{ inputs.key || inputs.environment }}
         PROVIDER_ROLE_ARN: ${{ inputs.provider_role_arn }}
         PROVIDER_ROLE_TFVAR: ${{ inputs.provider_role_tfvar }}
 

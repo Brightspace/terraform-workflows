@@ -13,13 +13,13 @@ fi
 
 jq \
 	--arg run_id "${GITHUB_RUN_ID}" \
-	--arg environment "${ENVIRONMENT}" \
+	--arg workspace_key "${WORKSPACE_KEY}" \
 	--arg workspace_path "${WORKSPACE_PATH}" \
 	--arg has_changes "${HAS_CHANGES}" \
 	--arg terraform_version "${TERRAFORM_VERSION}" \
 	'.
 	| .run_id=$run_id
-  	| .environment=$environment
+  	| .workspace_key=$workspace_key
 	| .workspace_path=$workspace_path
 	| .has_changes=$has_changes
 	| .terraform_version=$terraform_version
