@@ -71,7 +71,7 @@ on:
 jobs:
 
   terraform:
-    uses: Brightspace/terraform-workflows/.github/workflows/workflow.yml@v5
+    uses: Brightspace/terraform-workflows/.github/workflows/workflow.yml@v4
     secrets: inherit
     with:
       terraform_version: 1.2.1
@@ -218,7 +218,7 @@ on:
       - '.github/workflows/terraform-format.yml'
 jobs:
   call-workflow:
-    uses: Brightspace/terraform-workflows/.github/workflows/format.yml@v5
+    uses: Brightspace/terraform-workflows/.github/workflows/format.yml@v4
     with:
       terraform_version: 0.14.4
       base_path: '.'
