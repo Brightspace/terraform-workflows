@@ -2,11 +2,7 @@
 
 set -euo pipefail
 
-JOBS=$( curl --header "Authorization: token ${GITHUB_TOKEN}" \
-	"${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs"
-)
-JOB_NAME_SUFFIX="Apply (${WORKSPACE_KEY})"
-JOB_URL=$( echo "${JOBS}" | jq --raw-output ".jobs[] | select( .name | endswith(\"${JOB_NAME_SUFFIX}\") ) | .html_url" )
+JOB_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/job/${JOB_ID}"
 COMMIT_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
 COMMIT_NAME="${GITHUB_REPOSITORY}@${GITHUB_SHA:0:7}"
 
