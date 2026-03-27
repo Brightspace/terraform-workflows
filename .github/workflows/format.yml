@@ -13,6 +13,12 @@ on:
         type: string
         required: true
 
+      create_pr_draft:
+        description: Whether the format-fixing PR should be opened as a draft
+        type: boolean
+        required: false
+        default: true
+
 jobs:
   format:
     name: Format
@@ -61,7 +67,7 @@ jobs:
               body: `Auto format #${context.payload.number}`,
               head: BRANCH_NAME,
               base: context.payload.pull_request.head.ref,
-              draft: true
+              draft: ${{ inputs.create_pr_draft }}
             });
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
