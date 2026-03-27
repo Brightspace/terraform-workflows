@@ -57,9 +57,10 @@ jobs:
         uses: Brightspace/third-party-actions@actions/github-script
         env:
           BRANCH_NAME: ${{ steps.format.outputs.format_branch }}
+          CREATE_PR_DRAFT: ${{ inputs.create_pr_draft }}
         with:
           script: |
-            const { BRANCH_NAME } = process.env
+            const { BRANCH_NAME, CREATE_PR_DRAFT } = process.env
             const { data: newPr } = await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -67,7 +68,7 @@ jobs:
               body: `Auto format #${context.payload.number}`,
               head: BRANCH_NAME,
               base: context.payload.pull_request.head.ref,
-              draft: ${{ inputs.create_pr_draft }}
+              draft: CREATE_PR_DRAFT === 'true'
             });
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
