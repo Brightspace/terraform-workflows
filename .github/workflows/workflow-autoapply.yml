@@ -53,6 +53,14 @@ on:
         required: false
         type: string
 
+      cancel_pending_runs:
+        description: |
+          If true (default), existing pending runs for the same workspace will be cancelled when this workflow is triggered.
+          If false, existing pending runs will not be cancelled, and the current run will be queued after them.
+        required: false
+        type: boolean
+        default: true
+
     outputs:
       had_changes:
         value: ${{ toJson(jobs.plan_apply.outputs.*) != '[]' }}
@@ -82,7 +90,16 @@ jobs:
 
     environment: ${{ github.event_name != 'pull_request' && matrix.environment || null }}
     # Workflows against a branch run one-at-a-time, workflows against a PR are non-blocking
-    concurrency: ${{ matrix.key || matrix.environment }}/${{ github.event_name != 'pull_request' && github.ref || github.run_id }}
+    concurrency: >-
+      ${{ fromJson(format(
+        case(
+          inputs.cancel_pending_runs,
+          '"{0}/{1}"',
+          '{{"group":"{0}/{1}", "queue":"max"}}'
+        ),
+        matrix.key || matrix.environment,
+        case(github.event_name != 'pull_request', github.ref, github.run_id)
+      )) }}
 
     strategy:
       fail-fast: false
