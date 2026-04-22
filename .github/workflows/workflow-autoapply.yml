@@ -90,16 +90,9 @@ jobs:
 
     environment: ${{ github.event_name != 'pull_request' && matrix.environment || null }}
     # Workflows against a branch run one-at-a-time, workflows against a PR are non-blocking
-    concurrency: >-
-      ${{ fromJson(format(
-        case(
-          inputs.cancel_pending_runs,
-          '"{0}/{1}"',
-          '{{"group":"{0}/{1}", "queue":"max"}}'
-        ),
-        matrix.key || matrix.environment,
-        case(github.event_name != 'pull_request', github.ref, github.run_id)
-      )) }}
+    concurrency:
+      group: ${{ matrix.key || matrix.environment }}/${{ case(github.event_name != 'pull_request', github.ref, github.run_id) }}
+      queue: ${{ case(inputs.cancel_pending_runs, 'single', 'max') }}
 
     strategy:
       fail-fast: false
