@@ -25,13 +25,24 @@ BACKEND_CONFIG=$(mktemp)
 cat > "${BACKEND_CONFIG}" << EOF
 region         = "us-east-1"
 bucket         = "d2l-terraform-state"
-dynamodb_table = "d2l-terraform-state"
 key            = "github/${GITHUB_REPOSITORY}/${WORKSPACE_KEY}.tfstate"
 EOF
 
 MAJOR_VERSION=$(terraform version | grep -oP 'Terraform v\K\d+')
 MINOR_VERSION=$(terraform version | grep -oP 'Terraform v\d+\.\K\d+')
-if (( "${MAJOR_VERSION}" * 1000 + "${MINOR_VERSION}" >= 1006 )); then
+TF_VERSION_NUM=$(( "${MAJOR_VERSION}" * 1000 + "${MINOR_VERSION}" ))
+
+if (( TF_VERSION_NUM >= 1010 )); then
+	cat >> "${BACKEND_CONFIG}" <<- EOF
+	use_lockfile   = true
+	EOF
+else
+	cat >> "${BACKEND_CONFIG}" <<- EOF
+	dynamodb_table = "d2l-terraform-state"
+	EOF
+fi
+
+if (( TF_VERSION_NUM >= 1006 )); then
 	cat >> "${BACKEND_CONFIG}" <<- EOF
 	assume_role = {
 	  role_arn = "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+${ROLE_KIND}"
