@@ -194,6 +194,15 @@ Defaults to `false`.
 
 ---
 
+##### `parallelism` (`number`)
+
+**Optional**.
+The value to pass to terraform's `-parallelism` flag during `plan` and `apply`, controlling the number of concurrent resource operations.
+If unset, the flag is omitted entirely and Terraform's own default (currently `10`) is used, so behaviour is unaffected if you don't set this.
+Raising this can reduce deploy time for workspaces with a large number of resources (e.g. hundreds of `for_each`-managed resources), though returns diminish (or reverse) well beyond typical provider/API rate limits.
+
+---
+
 ##### `slack_channel` (`string`)
 
 **Optional**.

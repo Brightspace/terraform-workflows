@@ -55,5 +55,10 @@ echo "##[group]terraform init"
 terraform init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
 
+PARALLELISM_FLAG=""
+if [ -n "${PARALLELISM:-}" ]; then
+	PARALLELISM_FLAG="-parallelism=${PARALLELISM}"
+fi
+
 terraform show "${PLAN_PATH}"
-terraform apply -input=false "${PLAN_PATH}"
+terraform apply -input=false ${PARALLELISM_FLAG} "${PLAN_PATH}"

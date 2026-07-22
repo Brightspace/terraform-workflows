@@ -33,6 +33,11 @@ on:
         default: 60
         type: number
 
+      parallelism:
+        description: Value passed to terraform's -parallelism flag during plan and apply. If unset, the flag is omitted and Terraform's own default is used.
+        required: false
+        type: number
+
       require_lockfile:
         description: Fail the workflow if the .terraform.lock.hcl file doesn't declare all providers in the workspace
         required: false
@@ -157,6 +162,7 @@ jobs:
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
         require_lockfile: ${{ inputs.require_lockfile }}
+        parallelism: ${{ inputs.parallelism }}
 
     - if: ${{ github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true' && inputs.slack_channel != '' }}
       continue-on-error: true
@@ -443,7 +449,8 @@ jobs:
             "terraform_version": "${{ inputs.terraform_version }}",
             "environment": "${{ fromJson(matrix.workspace).environment }}",
             "key": "${{ fromJson(matrix.workspace).key }}",
-            "workspace_path": "${{ fromJson(steps.parse.outputs.config)[fromJson(matrix.workspace).key].workspace_path }}"
+            "workspace_path": "${{ fromJson(steps.parse.outputs.config)[fromJson(matrix.workspace).key].workspace_path }}",
+            "parallelism": "${{ inputs.parallelism }}"
           }
 
     - if: ${{ !cancelled() && inputs.slack_channel != '' }}
