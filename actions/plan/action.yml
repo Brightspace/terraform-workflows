@@ -30,6 +30,9 @@ inputs:
     description: Fail the action if the .terraform.lock.hcl file doesn't declare all providers in the workspace
     default: false
 
+  parallelism:
+    description: Value passed to terraform's -parallelism flag during plan. If empty, the flag is omitted and Terraform's own default is used.
+
 outputs:
   plan_path:
     description: Path to plan file
@@ -68,6 +71,7 @@ runs:
         PROVIDER_ROLE_TFVAR: ${{ fromJson(inputs.config).provider_role_tfvar }}
         REFRESH_ON_PR: ${{ inputs.refresh_on_pr }}
         REQUIRE_LOCKFILE: ${{ inputs.require_lockfile }}
+        PARALLELISM: ${{ inputs.parallelism }}
 
     - run: ${{ github.action_path }}/details.sh
       shell: bash

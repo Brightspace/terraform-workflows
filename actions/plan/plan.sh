@@ -68,6 +68,11 @@ if [ "${REQUIRE_LOCKFILE}" == "true" ]; then
 	fi
 fi
 
+PARALLELISM_FLAG=""
+if [ -n "${PARALLELISM:-}" ]; then
+	PARALLELISM_FLAG="-parallelism=${PARALLELISM}"
+fi
+
 set +e
 echo "##[group]terraform plan"
 terraform plan \
@@ -76,7 +81,8 @@ terraform plan \
 	-detailed-exitcode \
 	-var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" \
 	-out "${ARTIFACTS_DIR}/terraform.plan" \
-	${REFRESH}
+	${REFRESH} \
+	${PARALLELISM_FLAG}
 PLAN_EXIT_CODE=$?
 echo "##[endgroup]"
 

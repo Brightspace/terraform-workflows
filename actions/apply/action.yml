@@ -28,3 +28,4 @@ runs:
         PLAN_PATH: ${{ steps.download.outputs.artifacts_dir }}/terraform.plan
         PLAN_ARTIFACTS: ${{ steps.download.outputs.artifacts_dir }}
         WORKSPACE_KEY: ${{ fromJson(inputs.config).key }}
+        PARALLELISM: ${{ fromJson(inputs.config).parallelism }}
