@@ -69,7 +69,10 @@ if [ "${REQUIRE_LOCKFILE}" == "true" ]; then
 fi
 
 PARALLELISM_FLAG=""
-if [ -n "${PARALLELISM:-}" ]; then
+# An unset optional `type: number` workflow_call input defaults to 0, not empty:
+# https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_callinputs
+# -parallelism=0 would stall terraform entirely, so treat 0 the same as unset.
+if [ -n "${PARALLELISM:-}" ] && [ "${PARALLELISM}" != "0" ]; then
 	PARALLELISM_FLAG="-parallelism=${PARALLELISM}"
 fi
 
