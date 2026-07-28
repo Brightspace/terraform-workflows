@@ -33,6 +33,11 @@ on:
         default: 60
         type: number
 
+      parallelism:
+        description: Value passed to terraform's -parallelism flag during plan and apply. If unset, the flag is omitted and Terraform's own default is used.
+        required: false
+        type: number
+
       require_lockfile:
         description: Fail the workflow if the .terraform.lock.hcl file doesn't declare all providers in the workspace
         required: false
@@ -160,6 +165,7 @@ jobs:
         terraform_version: ${{ inputs.terraform_version }}
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
         require_lockfile: ${{ inputs.require_lockfile }}
+        parallelism: ${{ inputs.parallelism }}
         skip_archive: true
 
     # Matrixed jobs overwrite eachother's outputs if they use the same name.
@@ -193,9 +199,15 @@ jobs:
       working-directory: ${{ fromJson(steps.parse.outputs.config)[matrix.key || matrix.environment].workspace_path }}
       shell: bash
       run: |
-        terraform apply -input=false "${PLAN_PATH}"
+        PARALLELISM_FLAG=""
+        if [ -n "${PARALLELISM:-}" ]; then
+          PARALLELISM_FLAG="-parallelism=${PARALLELISM}"
+        fi
+
+        terraform apply -input=false "${PLAN_PATH}" ${PARALLELISM_FLAG}
       env:
         PLAN_PATH: ${{ steps.plan.outputs.plan_path }}
+        PARALLELISM: ${{ inputs.parallelism }}
 
     outputs:
       changed_workspace_0: ${{ steps.changed.outputs.changed_workspace_0 }}
