@@ -204,7 +204,7 @@ jobs:
           PARALLELISM_FLAG="-parallelism=${PARALLELISM}"
         fi
 
-        terraform apply -input=false "${PLAN_PATH}" ${PARALLELISM_FLAG}
+        terraform apply -input=false ${PARALLELISM_FLAG} "${PLAN_PATH}"
       env:
         PLAN_PATH: ${{ steps.plan.outputs.plan_path }}
         PARALLELISM: ${{ inputs.parallelism }}
