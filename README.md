@@ -209,6 +209,14 @@ Raising this can reduce deploy time for workspaces with a large number of resour
 If specified, sends notifications to the Slack channel at the end of Terraform Plan and Apply jobs.
 You must also add the [GitHub Actions](https://d2l.slack.com/apps/A04BR0NCZAS-github-actions) Slack app to the channel's integrations.
 
+#### Secrets
+
+##### `CUSTOM_GITHUB_TOKEN`
+
+**Optional**.
+A GitHub token with read access to private repositories containing Terraform modules.
+When provided, HTTPS Git module sources under `github.com` are authenticated during Terraform initialization.
+
 ## Terraform Format
 
 This is used to ensure formatting on PRs. It is not included in the standard workflow.

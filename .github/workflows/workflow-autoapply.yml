@@ -71,6 +71,9 @@ on:
         value: ${{ toJson(jobs.plan_apply.outputs.*) != '[]' }}
 
     secrets:
+      CUSTOM_GITHUB_TOKEN:
+        description: GitHub token with read access to private Terraform module repositories
+        required: false
       ARTIFACT_REPOSITORIES_SECRET_1:
         required: false
       ARTIFACT_REPOSITORIES_SECRET_2:
@@ -159,6 +162,10 @@ jobs:
 
     - id: plan
       uses: Brightspace/terraform-workflows/actions/plan@v4
+      env:
+        GIT_CONFIG_COUNT: ${{ secrets.CUSTOM_GITHUB_TOKEN != '' && '1' || '0' }}
+        GIT_CONFIG_KEY_0: url.https://x-access-token:${{ secrets.CUSTOM_GITHUB_TOKEN }}@github.com/.insteadOf
+        GIT_CONFIG_VALUE_0: https://github.com/
       with:
         comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.key || matrix.environment]) }}
