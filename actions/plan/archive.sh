@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
+	S3_PREFIX="github-prs"
+	ROLE_SUFFIX="r"
+else
+	S3_PREFIX="github"
+	ROLE_SUFFIX="m"
+fi
+
 trap onexit EXIT
 onexit() {
 	set +u
@@ -17,7 +25,7 @@ shopt -u globstar
 
 ASSUMEROLE_RESULT=$(aws \
 	sts assume-role \
-	--role-arn "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+m" \
+	--role-arn "arn:aws:iam::891724658749:role/github/${GITHUB_REPOSITORY%/*}+${GITHUB_REPOSITORY#*/}+${ROLE_SUFFIX}" \
 	--role-session-name "githubaction-sha-${GITHUB_SHA}" \
 )
 
@@ -26,11 +34,6 @@ AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' <<< "${ASSUMEROLE_R
 AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' <<< "${ASSUMEROLE_RESULT}")
 
 WORKSPACE_KEY_SAFE=$(xxd -p <<< "${WORKSPACE_KEY}")
-if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
-	S3_PREFIX="github_prs"
-else
-	S3_PREFIX="github"
-fi
 S3_PATH="s3://d2l-terraform-plans/${S3_PREFIX}/${GITHUB_REPOSITORY}/${GITHUB_SHA}/${GITHUB_WORKFLOW}/${GITHUB_RUN_ID}/${WORKSPACE_KEY_SAFE}.tar.gz"
 
 echo "##[group]upload plan"
