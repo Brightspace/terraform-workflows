@@ -2,8 +2,6 @@
 
 set -euo pipefail
 
-. "${BASH_SOURCE%/*}/skip_prs.sh"
-
 trap onexit EXIT
 onexit() {
 	set +u
@@ -28,7 +26,12 @@ AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' <<< "${ASSUMEROLE_R
 AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' <<< "${ASSUMEROLE_RESULT}")
 
 WORKSPACE_KEY_SAFE=$(xxd -p <<< "${WORKSPACE_KEY}")
-S3_PATH="s3://d2l-terraform-plans/github/${GITHUB_REPOSITORY}/${GITHUB_SHA}/${GITHUB_WORKFLOW}/${GITHUB_RUN_ID}/${WORKSPACE_KEY_SAFE}.tar.gz"
+if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
+	S3_PREFIX="github_prs"
+else
+	S3_PREFIX="github"
+fi
+S3_PATH="s3://d2l-terraform-plans/${S3_PREFIX}/${GITHUB_REPOSITORY}/${GITHUB_SHA}/${GITHUB_WORKFLOW}/${GITHUB_RUN_ID}/${WORKSPACE_KEY_SAFE}.tar.gz"
 
 echo "##[group]upload plan"
 aws s3 cp \
