@@ -1,0 +1,25 @@
+name: Terraform Plan Summary
+
+inputs:
+
+  terraform_version:
+    description: Which version of terraform to use
+    required: true
+
+  workspaces:
+    description: Workspaces (from config) to summarize
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: Brightspace/third-party-actions@hashicorp/setup-terraform
+      with:
+        terraform_version: ${{ inputs.terraform_version }}
+        terraform_wrapper: false
+
+    - id: download
+      run: ${{ github.action_path }}/download.sh
+      shell: bash
+      env:
+        WORKSPACES: ${{ inputs.workspaces }}

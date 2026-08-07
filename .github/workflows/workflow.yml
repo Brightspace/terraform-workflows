@@ -403,6 +403,40 @@ jobs:
       changed_workspace_198: ${{ steps.changed.outputs.changed_workspace_198 }}
       changed_workspace_199: ${{ steps.changed.outputs.changed_workspace_199 }}
 
+  plan-summary:
+    name: Plan summary
+    runs-on: [self-hosted, Linux, AWS]
+    timeout-minutes: 10
+
+    needs: plan
+
+    if: github.event_name == 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+    - id: parse
+      uses: Brightspace/terraform-workflows/actions/parse-config@v4
+      with:
+        # GHA's fromJson() supports comments in JSON strings which is nice from
+        # an end-user perspective (e.g. naming account ids). toJson(fromJson())
+        # is used in order to strip these comments out before parsing it ourselves
+        config: ${{ toJson(fromJson(inputs.config)) }}
+        max_workspaces: 200
+
+    - name: Assume Hub Role (PR)
+      uses: Brightspace/third-party-actions@aws-actions/configure-aws-credentials
+      with:
+        role-to-assume: arn:aws:iam::323258989788:role/hub-roles/github+${{ github.repository_owner }}+${{ github.event.repository.name }}+repo
+        aws-region: us-east-1
+
+    - name: Download and summarize plans
+      uses: Brightspace/terraform-workflows/actions/plan/summary@CLOV-517/WIP
+      with:
+        workspaces: ${{ steps.parse.outputs.workspaces }}
+
   apply:
     name: Apply (${{ fromJson(matrix.workspace).key }})
     runs-on: [self-hosted, Linux, AWS]
