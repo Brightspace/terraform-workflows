@@ -239,11 +239,14 @@ function generateSummary(workspaces, plans) {
 		lines.push(`<summary>${environmentName}</summary>\n`);
 		for(const resource of changes[environment]) {
 			lines.push(`resource **${resource.resourceName}** will be **${resource.action}**`);
-			lines.push('```');
-			for(const [key, change] of Object.entries(resource.changes ?? {})) {
-				lines.push(`${key}: ${change.before ?? '(not present)'} -> ${change.after}`);
+			const resourceChanges = Object.entries(resource.changes ?? {});
+			if (resourceChanges.length > 0) {
+				lines.push('```');
+				for(const [key, change] of resourceChanges) {
+					lines.push(`${key}: ${change.before ?? '(not present)'} -> ${change.after}`);
+				}
+				lines.push('```');
 			}
-			lines.push('```');
 		}
 		lines.push('</details>');
 	}
