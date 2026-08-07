@@ -2,6 +2,9 @@ name: Terraform Plan Summary
 
 inputs:
 
+  GITHUB_TOKEN:
+    default: ${{ github.token }}
+
   terraform_version:
     description: Which version of terraform to use
     required: true
@@ -23,3 +26,14 @@ runs:
       shell: bash
       env:
         WORKSPACES: ${{ inputs.workspaces }}
+
+    - id: summarize
+      uses: Brightspace/third-party-actions@actions/github-script
+      env:
+        ARTIFACTS_DIR: ${{ steps.download.outputs.artifacts_dir }}
+        WORKSPACES: ${{ inputs.workspaces }}
+      with:
+        github-token: ${{ inputs.GITHUB_TOKEN }}
+        script: |
+          const summarize = require('${{ github.action_path }}/summarize.js')
+          await summarize({ core, github, context })
