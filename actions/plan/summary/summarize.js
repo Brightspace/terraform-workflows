@@ -79,9 +79,10 @@ function uniqueNestedPaths(paths) {
 	return [...unique.values()];
 }
 
-function isUnknown(after_unknown, path) {
+// checks is a path is marked in unknown or sensitive objects
+function isMarked(obj, path) {
 	for (let length = 0; length <= path.length; length += 1) {
-		if (getValueAtPath(after_unknown, path.slice(0, length)) === true) {
+		if (getValueAtPath(obj, path.slice(0, length)) === true) {
 			return true;
 		}
 	}
@@ -107,13 +108,15 @@ function changedValues(change) {
 	for (const path of paths) {
 		const before = getValueAtPath(change.before, path);
 		const after = getValueAtPath(change.after, path);
-		const afterUnknown = isUnknown(change.after_unknown, path);
+		const afterUnknown = isMarked(change.after_unknown, path);
 		// use stringify when comparing to handle empty objects/arrays
 		if(JSON.stringify(before) !== JSON.stringify(after) || afterUnknown) {
+            const isSensitive = isMarked(change.after_sensitive, path) || isMarked(change.before_sensitive, path);;
 			changes.push({
 				key: path.map(p => `${p}`).join('.'),
 				before,
-				after: afterUnknown ? 'unknown' : after ?? null
+				after: afterUnknown ? 'unknown' : after ?? null,
+                isSensitive
 			});
 		}
 	}
@@ -243,7 +246,12 @@ function generateSummary(workspaces, plans) {
 			if (resourceChanges.length > 0) {
 				lines.push('```');
 				for(const [key, change] of resourceChanges) {
-					lines.push(`${key}: ${change.before ?? '(not present)'} -> ${change.after}`);
+                    if (change.isSensitive) {
+                        lines.push(`${key}: (sensitive) -> (sensitive)`);
+                    }
+                    else {
+                        lines.push(`${key}: ${change.before ?? '(not present)'} -> ${change.after}`);
+                    }
 				}
 				lines.push('```');
 			}
