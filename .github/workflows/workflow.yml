@@ -155,8 +155,7 @@ jobs:
         aws-region: us-east-1
 
     - id: plan
-      #uses: Brightspace/terraform-workflows/actions/plan@v4
-      uses: $/actions/plan
+      uses: Brightspace/terraform-workflows/actions/plan@CLOV-517/WIP
       with:
         comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.key || matrix.environment]) }}
