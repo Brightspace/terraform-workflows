@@ -170,10 +170,10 @@ function groupChangesByWorkspace(resources, workspaces) {
 					}
 					else {
 						if(change.before !== changes[change.key].before) {
-							changes[change.key].before = '<environment-specific>';
+							changes[change.key].before = '(environment-specific)';
 						}
 						if(change.after !== changes[change.key].after) {
-							changes[change.key].after = '<environment-specific>';
+							changes[change.key].after = '(environment-specific)';
 						}
 						changes[change.key].affectedEnvCount++;
 					}
@@ -182,8 +182,8 @@ function groupChangesByWorkspace(resources, workspaces) {
 			// check if any values were only changed in some environments
 			for(const change of Object.values(changes)) {
 				if(change.affectedEnvCount !== workspaces.length) {
-					change.before = '<environment-specific>';
-					change.after = '<environment-specific>';
+					change.before = '(environment-specific)';
+					change.after = '(environment-specific)';
 				}
 			}
 			environments.all.push({
@@ -234,14 +234,18 @@ function generateSummary(workspaces, plans) {
 
 	const lines = ['## Terraform plan summary'];
 	for(const environment of Object.keys(changes)) {
+		lines.push('<details>');
 		const environmentName = environment === 'all' ? 'All environments' : environment;
-		lines.push(`### ${environmentName}`);
+		lines.push(`<summary>${environmentName}</summary>\n`);
 		for(const resource of changes[environment]) {
-			lines.push(`resource ${resource.resourceName} will be ${resource.action}:`);
+			lines.push(`resource **${resource.resourceName}** will be **${resource.action}**`);
+			lines.push('```');
 			for(const [key, change] of Object.entries(resource.changes ?? {})) {
-				lines.push(`  ${key}: ${change.before ?? '<not present>'} -> ${change.after}`);
+				lines.push(`${key}: ${change.before ?? '(not present)'} -> ${change.after}`);
 			}
+			lines.push('```');
 		}
+		lines.push('</details>');
 	}
 	return lines.join('\n');
 }
