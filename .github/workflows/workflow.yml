@@ -416,7 +416,7 @@ jobs:
 
     needs: plan
 
-    if: ${{ inputs.comment_plan_summary }} && github.event_name == 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
+    if: inputs.comment_plan_summary && github.event_name == 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
 
     permissions:
       contents: read

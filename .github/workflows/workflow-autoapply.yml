@@ -9,6 +9,12 @@ on:
         type: boolean
         default: true
 
+      comment_plan_summary:
+        description: Create a pull request comment summarizing the plan changes across the workspaces
+        required: false
+        type: boolean
+        default: false
+
       config:
         description: A JSON (with comments) config string
         required: true
@@ -193,6 +199,12 @@ jobs:
       env:
         WORKSPACES: ${{ steps.parse.outputs.workspaces }}
         WORKSPACE_KEY: ${{ matrix.key || matrix.environment }}
+
+    - if: inputs.comment_plan_summary && github.event_name == 'pull_request' && steps.plan.outputs.has_changes == 'true'
+      name: Download and summarize plans
+      uses: Brightspace/terraform-workflows/actions/plan/summary@CLOV-517/AddSummaryJob
+      with:
+        workspaces: ${{ steps.parse.outputs.workspaces }}
 
     - if: github.event_name != 'pull_request' && steps.plan.outputs.has_changes == 'true'
       name: Apply
