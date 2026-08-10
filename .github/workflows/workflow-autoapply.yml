@@ -424,9 +424,9 @@ jobs:
     runs-on: [self-hosted, Linux, AWS]
     timeout-minutes: 5
 
-    needs: plan
+    needs: plan_apply
 
-    if: inputs.comment_plan_summary && github.event_name == 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
+    if: inputs.comment_plan_summary && github.event_name == 'pull_request' && toJson(needs.plan_apply.outputs.*) != '[]'
 
     permissions:
       contents: read
