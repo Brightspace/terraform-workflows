@@ -172,7 +172,6 @@ jobs:
         refresh_on_pr: ${{ inputs.refresh_on_pr }}
         require_lockfile: ${{ inputs.require_lockfile }}
         parallelism: ${{ inputs.parallelism }}
-        skip_archive: true
 
     # Matrixed jobs overwrite eachother's outputs if they use the same name.
     # Unfortunately though, job outputs need to be statically defined in the yml
