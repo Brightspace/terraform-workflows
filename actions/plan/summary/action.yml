@@ -35,5 +35,5 @@ runs:
       with:
         github-token: ${{ inputs.GITHUB_TOKEN }}
         script: |
-          const summarize = require('${{ github.action_path }}/summarize.js')
-          await summarize({ core, github, context })
+          const { summarizePlans } = require('${{ github.action_path }}/summarize.js')
+          await summarizePlans({ core, github, context })

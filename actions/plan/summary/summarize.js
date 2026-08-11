@@ -79,7 +79,18 @@ function uniqueNestedPaths(paths) {
 	return [...unique.values()];
 }
 
-// checks is a path is marked in unknown or sensitive objects
+/**
+ * Checks if a path is marked in unknown or sensitive objects
+ * These objects have a similar structure to before/after objects, but only nodes with the value true are unknown or sensitive
+ * i.e. for the obj
+ * {
+     "architectures": [false],
+     "last_modified": true,
+     "layers": [],
+     "tags": {}
+   },
+ * isMarked should return true for ['last_modified'] and false for all other values
+ */
 function isMarked(obj, path) {
 	for (let length = 0; length <= path.length; length += 1) {
 		if (getValueAtPath(obj, path.slice(0, length)) === true) {
@@ -168,6 +179,7 @@ function groupChangesByWorkspace(resources, workspaces) {
 						changes[change.key] = {
 							before: change.before,
 							after: change.after,
+							isSensitive: change.isSensitive,
 							affectedEnvCount: 1
 						}
 					}
@@ -226,7 +238,7 @@ function generateSummary(workspaces, plans) {
 				action: getActionDescription(resource.change.actions),
 			};
 			// if resource is being created/deleted, don't list all the individual changes
-			if(resourceChanges.action === 'UPDATED' || resourceChanges.action === 'RECREATED') {
+			if(resourceChanges.action !== 'DELETED') {
 				resourceChanges.changes = changedValues(resource.change);
 			}
 			resources_modified[resource.address][workspace] = resourceChanges;
@@ -261,7 +273,7 @@ function generateSummary(workspaces, plans) {
 	return lines.join('\n');
 }
 
-module.exports = async ({ core, github, context }) => {
+async function summarizePlans({ core, github, context }) {
 	const { ARTIFACTS_DIR, WORKSPACES } = process.env;
 	const workspaceKeys = JSON.parse(WORKSPACES);
 
@@ -287,3 +299,12 @@ module.exports = async ({ core, github, context }) => {
 		body: summary
 	});
 }
+
+module.exports = {
+	getNestedPaths,
+	getValueAtPath,
+	isMarked,
+	changedValues,
+	groupChangesByWorkspace,
+	summarizePlans
+};

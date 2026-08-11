@@ -9,6 +9,12 @@ on:
         type: boolean
         default: true
 
+      comment_plan_summary:
+        description: Create a pull request comment summarizing the plan changes across the workspaces
+        required: false
+        type: boolean
+        default: false
+
       config:
         description: A JSON (with comments) config string
         required: true
@@ -406,11 +412,11 @@ jobs:
   plan-summary:
     name: Plan summary
     runs-on: [self-hosted, Linux, AWS]
-    timeout-minutes: 10
+    timeout-minutes: 5
 
     needs: plan
 
-    if: github.event_name == 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
+    if: inputs.comment_plan_summary && github.event_name == 'pull_request' && toJson(needs.plan.outputs.*) != '[]'
 
     permissions:
       contents: read
