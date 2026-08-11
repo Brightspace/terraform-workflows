@@ -161,7 +161,7 @@ jobs:
         aws-region: us-east-1
 
     - id: plan
-      uses: Brightspace/terraform-workflows/actions/plan@CLOV-517/AddSummaryJob
+      uses: Brightspace/terraform-workflows/actions/plan@v4
       with:
         comment_plan: ${{ inputs.comment_plan }}
         config: ${{ toJson(fromJson(steps.parse.outputs.config)[matrix.key || matrix.environment]) }}
@@ -440,7 +440,7 @@ jobs:
         aws-region: us-east-1
 
     - name: Download and summarize plans
-      uses: Brightspace/terraform-workflows/actions/plan/summary@CLOV-517/AddSummaryJob
+      uses: Brightspace/terraform-workflows/actions/plan/summary@v4
       with:
         workspaces: ${{ steps.parse.outputs.workspaces }}
 
