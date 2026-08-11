@@ -271,3 +271,12 @@ referencing these actions has changed:
 ```
 
 Starting with v4, reusable workflow is the only supported way to use terraform-workflows.
+
+## Developing
+
+The plan summary step has unit tests which can be run using
+
+``` sh
+cd actions/plan/summary
+node --test
+```

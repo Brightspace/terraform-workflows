@@ -179,6 +179,7 @@ function groupChangesByWorkspace(resources, workspaces) {
 						changes[change.key] = {
 							before: change.before,
 							after: change.after,
+							isSensitive: change.isSensitive,
 							affectedEnvCount: 1
 						}
 					}
@@ -272,7 +273,7 @@ function generateSummary(workspaces, plans) {
 	return lines.join('\n');
 }
 
-module.exports = async ({ core, github, context }) => {
+async function summarizePlans({ core, github, context }) {
 	const { ARTIFACTS_DIR, WORKSPACES } = process.env;
 	const workspaceKeys = JSON.parse(WORKSPACES);
 
@@ -298,3 +299,12 @@ module.exports = async ({ core, github, context }) => {
 		body: summary
 	});
 }
+
+module.exports = {
+	getNestedPaths,
+	getValueAtPath,
+	isMarked,
+	changedValues,
+	groupChangesByWorkspace,
+	summarizePlans
+};
