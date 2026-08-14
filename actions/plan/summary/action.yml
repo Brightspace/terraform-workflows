@@ -1,0 +1,39 @@
+name: Terraform Plan Summary
+
+inputs:
+
+  GITHUB_TOKEN:
+    default: ${{ github.token }}
+
+  terraform_version:
+    description: Which version of terraform to use
+    required: true
+
+  workspaces:
+    description: Workspaces (from config) to summarize
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: Brightspace/third-party-actions@hashicorp/setup-terraform
+      with:
+        terraform_version: ${{ inputs.terraform_version }}
+        terraform_wrapper: false
+
+    - id: download
+      run: ${{ github.action_path }}/download.sh
+      shell: bash
+      env:
+        WORKSPACES: ${{ inputs.workspaces }}
+
+    - id: summarize
+      uses: Brightspace/third-party-actions@actions/github-script
+      env:
+        ARTIFACTS_DIR: ${{ steps.download.outputs.artifacts_dir }}
+        WORKSPACES: ${{ inputs.workspaces }}
+      with:
+        github-token: ${{ inputs.GITHUB_TOKEN }}
+        script: |
+          const { summarizePlans } = require('${{ github.action_path }}/summarize.js')
+          await summarizePlans({ core, github, context })
