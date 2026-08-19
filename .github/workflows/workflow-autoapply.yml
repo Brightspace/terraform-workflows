@@ -204,6 +204,22 @@ jobs:
       working-directory: ${{ fromJson(steps.parse.outputs.config)[matrix.key || matrix.environment].workspace_path }}
       shell: bash
       run: |
+        terraform_with_deferred_stderr() {
+          local terraform_stderr
+          local terraform_exit_code
+
+          terraform_stderr=$(mktemp)
+          if terraform "$@" 2> "${terraform_stderr}"; then
+            terraform_exit_code=0
+          else
+            terraform_exit_code=$?
+          fi
+
+          cat "${terraform_stderr}"
+          rm "${terraform_stderr}"
+          return "${terraform_exit_code}"
+        }
+
         PARALLELISM_FLAG=""
         # An unset optional `type: number` workflow_call input defaults to 0, not empty:
         # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_callinputs
@@ -212,7 +228,7 @@ jobs:
           PARALLELISM_FLAG="-parallelism=${PARALLELISM}"
         fi
 
-        terraform apply -input=false ${PARALLELISM_FLAG} "${PLAN_PATH}" 2>&1
+        terraform_with_deferred_stderr apply -input=false ${PARALLELISM_FLAG} "${PLAN_PATH}"
       env:
         PLAN_PATH: ${{ steps.plan.outputs.plan_path }}
         PARALLELISM: ${{ inputs.parallelism }}

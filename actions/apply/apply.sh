@@ -2,6 +2,22 @@
 
 set -euo pipefail
 
+terraform_with_deferred_stderr() {
+	local terraform_stderr
+	local terraform_exit_code
+
+	terraform_stderr=$(mktemp)
+	if terraform "$@" 2> "${terraform_stderr}"; then
+		terraform_exit_code=0
+	else
+		terraform_exit_code=$?
+	fi
+
+	cat "${terraform_stderr}"
+	rm "${terraform_stderr}"
+	return "${terraform_exit_code}"
+}
+
 trap onexit EXIT
 onexit() {
 	set +u
@@ -52,7 +68,7 @@ fi
 echo "##[endgroup]"
 
 echo "##[group]terraform init"
-terraform init -input=false -backend-config="${BACKEND_CONFIG}" 2>&1
+terraform_with_deferred_stderr init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
 
 PARALLELISM_FLAG=""
@@ -63,5 +79,5 @@ if [ -n "${PARALLELISM:-}" ] && [ "${PARALLELISM}" != "0" ]; then
 	PARALLELISM_FLAG="-parallelism=${PARALLELISM}"
 fi
 
-terraform show "${PLAN_PATH}" 2>&1
-terraform apply -input=false ${PARALLELISM_FLAG} "${PLAN_PATH}" 2>&1
+terraform_with_deferred_stderr show "${PLAN_PATH}"
+terraform_with_deferred_stderr apply -input=false ${PARALLELISM_FLAG} "${PLAN_PATH}"

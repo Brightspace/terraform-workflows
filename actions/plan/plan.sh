@@ -2,6 +2,22 @@
 
 set -euo pipefail
 
+terraform_with_deferred_stderr() {
+	local terraform_stderr
+	local terraform_exit_code
+
+	terraform_stderr=$(mktemp)
+	if terraform "$@" 2> "${terraform_stderr}"; then
+		terraform_exit_code=0
+	else
+		terraform_exit_code=$?
+	fi
+
+	cat "${terraform_stderr}"
+	rm "${terraform_stderr}"
+	return "${terraform_exit_code}"
+}
+
 trap onexit EXIT
 onexit() {
 	set +u
@@ -55,7 +71,7 @@ else
 fi
 
 echo "##[group]terraform init"
-terraform init -input=false -backend-config="${BACKEND_CONFIG}" 2>&1
+terraform_with_deferred_stderr init -input=false -backend-config="${BACKEND_CONFIG}"
 echo "##[endgroup]"
 
 if [ "${REQUIRE_LOCKFILE}" == "true" ]; then
@@ -78,14 +94,14 @@ fi
 
 set +e
 echo "##[group]terraform plan"
-terraform plan \
+terraform_with_deferred_stderr plan \
 	-input=false \
 	-lock=false \
 	-detailed-exitcode \
 	-var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" \
 	-out "${ARTIFACTS_DIR}/terraform.plan" \
 	${REFRESH} \
-	${PARALLELISM_FLAG} 2>&1
+	${PARALLELISM_FLAG}
 PLAN_EXIT_CODE=$?
 echo "##[endgroup]"
 
