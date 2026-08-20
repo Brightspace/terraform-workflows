@@ -55,7 +55,7 @@ else
 fi
 
 echo "##[group]terraform init"
-terraform init -input=false -backend-config="${BACKEND_CONFIG}"
+terraform init -input=false -backend-config="${BACKEND_CONFIG}" 2>&1
 echo "##[endgroup]"
 
 if [ "${REQUIRE_LOCKFILE}" == "true" ]; then
@@ -85,7 +85,7 @@ terraform plan \
 	-var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" \
 	-out "${ARTIFACTS_DIR}/terraform.plan" \
 	${REFRESH} \
-	${PARALLELISM_FLAG}
+	${PARALLELISM_FLAG} 2>&1
 PLAN_EXIT_CODE=$?
 echo "##[endgroup]"
 

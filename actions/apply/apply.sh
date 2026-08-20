@@ -52,7 +52,7 @@ fi
 echo "##[endgroup]"
 
 echo "##[group]terraform init"
-terraform init -input=false -backend-config="${BACKEND_CONFIG}"
+terraform init -input=false -backend-config="${BACKEND_CONFIG}" 2>&1
 echo "##[endgroup]"
 
 PARALLELISM_FLAG=""
@@ -63,5 +63,5 @@ if [ -n "${PARALLELISM:-}" ] && [ "${PARALLELISM}" != "0" ]; then
 	PARALLELISM_FLAG="-parallelism=${PARALLELISM}"
 fi
 
-terraform show "${PLAN_PATH}"
-terraform apply -input=false ${PARALLELISM_FLAG} "${PLAN_PATH}"
+terraform show "${PLAN_PATH}" 2>&1
+terraform apply -input=false ${PARALLELISM_FLAG} "${PLAN_PATH}" 2>&1

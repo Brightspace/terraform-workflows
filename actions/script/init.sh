@@ -43,7 +43,7 @@ else
 fi
 
 echo "##[group]terraform init"
-terraform init -input=false -backend-config="${BACKEND_CONFIG}"
+terraform init -input=false -backend-config="${BACKEND_CONFIG}" 2>&1
 echo "##[endgroup]"
 
 echo "TF_VAR_${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" >> "${GITHUB_ENV}"
