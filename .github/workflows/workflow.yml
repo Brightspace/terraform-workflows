@@ -72,7 +72,7 @@ on:
 
     outputs:
       had_changes:
-        value: ${{ toJson(jobs.plan.outputs.*) != '[]' }}
+        value: ${{ github.event_name != 'pull_request' && toJson(jobs.plan.outputs.*) != '[]' }}
 
     secrets:
       ARTIFACT_REPOSITORIES_SECRET_1:
