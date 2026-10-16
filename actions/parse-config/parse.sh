@@ -8,12 +8,17 @@ errors=$(echo "${CONFIG}" \
 	| yq -o=json . - \
 	| jq -cr '
 		.[]
-		| .account_id or (.provider_role_arn_ro and .provider_role_arn_rw)
+		| if has("manage_aws_resources") and (.manage_aws_resources | type) != "boolean" then false
+		  elif .manage_aws_resources == false then
+		    ([.account_id, .provider_role_arn_ro, .provider_role_arn_rw, .provider_role_tfvar,
+		      .workspaces[].provider_role_tfvar] | all(. == null))
+		  else .account_id or (.provider_role_arn_ro and .provider_role_arn_rw)
+		  end
 		| select(. | not)
 		| 1
 		')
 if [[ -n "${errors}" ]]; then
-	echo '::error::Either "account_id" or both of "provider_role_arn_ro" and "provider_role_arn_rw" must be provided'
+	echo '::error::Provide an AWS account or both provider roles, or set "manage_aws_resources": false without AWS account/role settings. "manage_aws_resources" must be a boolean.'
 	exit 1
 fi
 
@@ -25,11 +30,14 @@ echo "${CONFIG}" \
 	| jq -cr '
 		.[]
 		| . as $account
-		| (.provider_role_arn_ro // "arn:aws:iam::\(.account_id):role/terraform/tfp+github+'"${role_suffix}"'") as $provider_role_arn_ro
-		| (.provider_role_arn_rw // "arn:aws:iam::\(.account_id):role/terraform/tfa+github+'"${role_suffix}"'") as $provider_role_arn_rw
+		| (if .manage_aws_resources == false then null else
+		    (.provider_role_arn_ro // "arn:aws:iam::\(.account_id):role/terraform/tfp+github+'"${role_suffix}"'") end) as $provider_role_arn_ro
+		| (if .manage_aws_resources == false then null else
+		    (.provider_role_arn_rw // "arn:aws:iam::\(.account_id):role/terraform/tfa+github+'"${role_suffix}"'") end) as $provider_role_arn_rw
 		| $account.workspaces[]
 		| (.provider_role_tfvar // $account.provider_role_tfvar // "terraform_role_arn") as $tfvar
 		| {
+			"manage_aws_resources": ($account.manage_aws_resources != false),
 			"provider_role_arn_ro": $provider_role_arn_ro,
 			"provider_role_arn_rw": $provider_role_arn_rw,
 			"provider_role_tfvar": $tfvar,

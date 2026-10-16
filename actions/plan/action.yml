@@ -69,6 +69,7 @@ runs:
         WORKSPACE_KEY: ${{ fromJson(inputs.config).key }}
         PROVIDER_ROLE_ARN: ${{ fromJson(inputs.config).provider_role_arn }}
         PROVIDER_ROLE_TFVAR: ${{ fromJson(inputs.config).provider_role_tfvar }}
+        MANAGE_AWS_RESOURCES: ${{ fromJson(inputs.config).manage_aws_resources }}
         REFRESH_ON_PR: ${{ inputs.refresh_on_pr }}
         REQUIRE_LOCKFILE: ${{ inputs.require_lockfile }}
         PARALLELISM: ${{ inputs.parallelism }}

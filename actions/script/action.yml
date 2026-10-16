@@ -14,9 +14,13 @@ inputs:
     description: Path to the terraform workspace
     required: true
 
+  manage_aws_resources:
+    description: Set to false to use only the shared backend without an AWS provider role
+    default: 'true'
+
   provider_role_arn:
     description: Role ARN to provide as a tfvar
-    required: true
+    required: false
 
   provider_role_tfvar:
     descritpion: tfvar name to use when specifying the provider role ARN
@@ -46,6 +50,7 @@ runs:
         WORKSPACE_KEY: ${{ inputs.key || inputs.environment }}
         PROVIDER_ROLE_ARN: ${{ inputs.provider_role_arn }}
         PROVIDER_ROLE_TFVAR: ${{ inputs.provider_role_tfvar }}
+        MANAGE_AWS_RESOURCES: ${{ inputs.manage_aws_resources }}
 
     - working-directory: ${{ inputs.workspace_path }}
       run: ${{ inputs.run }}

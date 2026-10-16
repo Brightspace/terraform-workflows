@@ -2,6 +2,25 @@
 
 set -euo pipefail
 
+case "${MANAGE_AWS_RESOURCES:-true}" in
+	true)
+		if [ -z "${PROVIDER_ROLE_ARN:-}" ]; then
+			echo '::error::An AWS provider role is required unless manage_aws_resources is false'
+			exit 1
+		fi
+		;;
+	false)
+		if [ -n "${PROVIDER_ROLE_ARN:-}" ]; then
+			echo '::error::Do not specify an AWS provider role when manage_aws_resources is false'
+			exit 1
+		fi
+		;;
+	*)
+		echo '::error::manage_aws_resources must be true or false'
+		exit 1
+		;;
+esac
+
 trap onexit EXIT
 onexit() {
 	set +u
@@ -46,4 +65,6 @@ echo "##[group]terraform init"
 terraform init -input=false -backend-config="${BACKEND_CONFIG}" 2>&1
 echo "##[endgroup]"
 
-echo "TF_VAR_${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" >> "${GITHUB_ENV}"
+if [ "${MANAGE_AWS_RESOURCES:-true}" != "false" ]; then
+	echo "TF_VAR_${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" >> "${GITHUB_ENV}"
+fi

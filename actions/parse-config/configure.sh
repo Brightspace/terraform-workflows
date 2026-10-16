@@ -10,14 +10,16 @@ else
 	D2L_TF_CONFIG="{}"
 fi
 
-if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
-	ROLE_ARN=$(jq -r '.provider_role_arn_ro' <<< "${WSCONFIG}")
+if [ "$(jq -r '.manage_aws_resources' <<< "${WSCONFIG}")" = "false" ]; then
+	ROLE_ARN=""
+elif [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+	ROLE_ARN=$(jq -r '.provider_role_arn_ro // empty' <<< "${WSCONFIG}")
 else
-	ROLE_ARN=$(jq -r '.provider_role_arn_rw' <<< "${WSCONFIG}")
+	ROLE_ARN=$(jq -r '.provider_role_arn_rw // empty' <<< "${WSCONFIG}")
 fi
 
-if [[ -z "${ROLE_ARN}" ]]; then
-	ACCOUNT_ID=$(jq -r '.account_id' <<< "${WSCONFIG}")
+if [[ -z "${ROLE_ARN}" ]] && [ "$(jq -r '.manage_aws_resources' <<< "${WSCONFIG}")" != "false" ]; then
+	ACCOUNT_ID=$(jq -r '.account_id // empty' <<< "${WSCONFIG}")
 	if [[ -z "${ACCOUNT_ID}" ]]; then
 		echo '::error::Either "account_id" or both of "provider_role_arn_ro" and "provider_role_arn_rw" must be provided'
 		exit 1

@@ -22,7 +22,7 @@ terraform {
 }
 ```
 
-2. Add a variable for and use it as input to your primary aws provider role_arn
+2. For AWS resource management, add a variable for and use it as input to your primary aws provider role_arn. For non-AWS providers, skip this step and follow [Non-AWS Providers](#non-aws-providers).
 
 ```tf
 variable "terraform_role_arn" {
@@ -98,6 +98,31 @@ jobs:
 
 #### Inputs
 
+#### Non-AWS Providers
+
+To manage non-AWS services while retaining the shared S3 state backend, plan publishing, approvals, and
+saved-plan applies, explicitly disable AWS resource management for the account group:
+
+```json
+[
+  {
+    "manage_aws_resources": false,
+    "workspaces": [
+      { "environment": "prd", "key": "prd/service", "path": "terraform/environments/prd/service" }
+    ]
+  }
+]
+```
+
+Keep `backend "s3" {}` in each Terraform root. No AWS provider or `terraform_role_arn` variable is needed.
+AWS OIDC authentication is still used for state and plan storage, not for managing target infrastructure.
+Configure repo-settings Terraform support with `aws_account_ids: []` and the appropriate deployment
+environments (plus `preflight`). Provisioning of these backend roles must be confirmed in
+terraform-infrastructure before the first live run.
+
+This mode only disables AWS provider-role injection. It does not configure authentication for other
+providers or implement service-specific deployment steps.
+
 ##### `config` (`Account[]`)
 
 **Required**.
@@ -105,25 +130,32 @@ The `config` input is a JSON (with comments) string which describes your terrafo
 The workspaces are grouped by account in order to de-duplicate some shared settings for the common scenario of dev/prod accounts.
 The root of the document should be an array of `Account` objects.
 
+###### `Account.manage_aws_resources` (`boolean`)
+
+**Optional**, defaults to `true`.
+Set to `false` for non-AWS providers using only the shared backend and artifact storage. In this mode,
+omit `account_id`, both provider role ARNs, and account or workspace `provider_role_tfvar` settings.
+AWS role variable injection is disabled. Existing configurations retain their AWS behaviour.
+
 ###### `Account.account_id` (`string`)
 
 **Recommended**.
 The 12 digit ID of the account where Terraform will be run.
-Required unless both `Account.provider_role_arn_ro` and `Account.provider_role_arn_rw` are provided (see below).
+Required when managing AWS resources unless both `Account.provider_role_arn_ro` and `Account.provider_role_arn_rw` are provided (see below).
 
 ###### `Account.provider_role_arn_ro` (`string`)
 
 **Optional**.
 The read-only role to use when performing terraform plans for pull requests in the account.
 Only needed if you do not wish to use the auto provisioned Terraform plan role.
-Required if `Account.account_id` isn't provided.
+Required when managing AWS resources if `Account.account_id` isn't provided.
 
 ###### `Account.provider_role_arn_rw` (`string`)
 
 **Optional**.
 The role to use when performing terraform plan and applies for merged pull requests in the account.
 Only needed if you do not wish to use the auto provisioned Terraform apply role.
-Required if `Account.account_id` isn't provided.
+Required when managing AWS resources if `Account.account_id` isn't provided.
 
 ###### `Account.provider_role_tfvar` (`string`)
 

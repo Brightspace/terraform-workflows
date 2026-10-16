@@ -76,13 +76,18 @@ if [ -n "${PARALLELISM:-}" ] && [ "${PARALLELISM}" != "0" ]; then
 	PARALLELISM_FLAG="-parallelism=${PARALLELISM}"
 fi
 
+PROVIDER_ROLE_ARGS=()
+if [ "${MANAGE_AWS_RESOURCES:-true}" != "false" ]; then
+	PROVIDER_ROLE_ARGS=(-var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}")
+fi
+
 set +e
 echo "##[group]terraform plan"
 terraform plan \
 	-input=false \
 	-lock=false \
 	-detailed-exitcode \
-	-var "${PROVIDER_ROLE_TFVAR}=${PROVIDER_ROLE_ARN}" \
+	"${PROVIDER_ROLE_ARGS[@]}" \
 	-out "${ARTIFACTS_DIR}/terraform.plan" \
 	${REFRESH} \
 	${PARALLELISM_FLAG} 2>&1
