@@ -28,7 +28,12 @@ function getNestedPaths(object) {
 			try {
 				const parsed = JSON.parse(val);
 				const nestedPaths = getNestedPaths(parsed).filter(p => p.length > 0);
-				paths.push(...nestedPaths.map(p => [keyStr, ...p]));
+				if (nestedPaths.length > 0) {
+					paths.push(...nestedPaths.map(p => [keyStr, ...p]));
+				}
+				else {
+					paths.push([keyStr]);
+				}
 			} catch (e) {
 				paths.push([keyStr]);
 			}
