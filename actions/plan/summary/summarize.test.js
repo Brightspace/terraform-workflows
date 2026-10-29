@@ -31,9 +31,13 @@ describe('getNestedPaths', () => {
 
 	it('parses JSON-encoded string values and recurses into them', () => {
 		const paths = getNestedPaths({
-			container_properties: JSON.stringify({ image: 'arn' })
+			container_properties: JSON.stringify({ image: 'arn', version: '1', config: '{}' })
 		});
-		assert.deepEqual(paths, [['container_properties', 'image']]);
+		assert.deepEqual(paths, [
+			['container_properties', 'image'],
+			['container_properties', 'version'],
+			['container_properties', 'config']
+		]);
 	});
 
 	it('treats a string that is not valid JSON as a plain leaf', () => {
