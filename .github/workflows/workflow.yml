@@ -25,6 +25,12 @@ on:
         type: string
         default: main
 
+      skip_freshness_check:
+        description: Skip the branch freshness assertion. Callers must check freshness themselves before running prerequisite jobs.
+        required: false
+        type: boolean
+        default: false
+
       refresh_on_pr:
         required: false
         type: boolean
@@ -119,7 +125,7 @@ jobs:
 
     - uses: Brightspace/third-party-actions@actions/checkout
 
-    - if: ${{ github.event_name != 'pull_request' }}
+    - if: ${{ github.event_name != 'pull_request' && !inputs.skip_freshness_check }}
       name: 'Assert: Branch is up to date'
       uses: Brightspace/assert-git-remote-ref-action@main
       with:

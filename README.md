@@ -171,6 +171,22 @@ Defaults to `main`.
 
 ---
 
+##### `skip_freshness_check` (`boolean`)
+
+**Optional**.
+Skip the `Assert: Branch is up to date` step for non-pull-request runs.
+Defaults to `false`, preserving the existing check against `default_branch`.
+Available in both `workflow.yml` and `workflow-autoapply.yml`.
+
+Callers setting this to `true` are responsible for checking branch freshness themselves.
+For example, run `Brightspace/assert-git-remote-ref-action@main` against `origin` and your default branch
+in a prerequisite job before packaging, and make the package job depend on that check.
+This avoids rechecking freshness after a long-running package job if the default branch advances during packaging.
+Do not use this input to apply old builds without an earlier freshness check.
+Pull request runs continue to skip the assertion regardless of this input.
+
+---
+
 ##### `refresh_on_pr` (`boolean`)
 
 **Optional**.
