@@ -102,7 +102,7 @@ jobs:
     environment: ${{ github.event_name != 'pull_request' && matrix.environment || null }}
     # Workflows against a branch run one-at-a-time, workflows against a PR are non-blocking
     concurrency:
-      group: ${{ matrix.key || matrix.environment }}/${{ case(github.event_name != 'pull_request', github.ref, github.run_id) }}
+      group: ${{ matrix.key || matrix.environment }}/${{ case(github.event_name != 'pull_request', github.ref, github.run_id) }}/buggy-gha
       queue: ${{ case(inputs.cancel_pending_runs, 'single', 'max') }}
 
     strategy:
